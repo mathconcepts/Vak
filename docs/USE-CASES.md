@@ -6,7 +6,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 1. Morning puja at home for elderly parents
 
-**Situation.** A grandfather in Mysuru reads the Lalitā Sahasranāma every morning with a recording playing. His glasses are old and the print is small. When he turns a page, he loses the line.
+**Situation.** A grandfather in Chennai reads the Lalitā Sahasranāma every morning with a recording playing. His glasses are old and the print is small. When he turns a page, he loses the line.
 
 **What they do.**
 1. Someone in the family opens the Reader file once on a tablet.
@@ -23,7 +23,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 2. Chanting before office
 
-**Situation.** A software engineer in Bengaluru has twenty minutes before the cab arrives. She chants alone, no recording, and does not want to tap a screen with wet hands after puja.
+**Situation.** A software engineer in Hyderabad has twenty minutes before the cab arrives. She chants alone, no recording, and does not want to tap a screen with wet hands after puja.
 
 **What they do.**
 1. Open the Reader and press **Listen** to start **Recite mode**.
@@ -38,14 +38,14 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 3. Navarathri across three places
 
-**Situation.** A family is spread across Bengaluru, Pune and abroad. During Navarathri they would like to chant the same prayer together, each person seeing the same word at the same moment.
+**Situation.** A family is spread across Bangalore, Pune and Delhi. During Navarathri they would like to chant the same prayer together, each person seeing the same word at the same moment.
 
 **What they do (as designed).**
 1. One person leads and shares a link on WhatsApp.
 2. Others open it and follow the leader's word on their own screens.
 3. The leader's messages are signed, and the relay stores nothing. No accounts.
 
-**What changes.** Distance matters less. The elder in Pune and the grandchild abroad are on the same line.
+**What changes.** Distance matters less. The grandparents in Pune, the son in Bangalore and the grandchild in Delhi are on the same line.
 
 **Tag: Planned.** Together mode is designed but not built.
 
@@ -53,7 +53,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 4. A boy learning Sandhyavandanam
 
-**Situation.** After his upanayanam, a boy is learning सन्ध्यावन्दनम्. He needs to hear each word slowly and see exactly which one is being said.
+**Situation.** After his upanayanam, a boy in Bangalore is learning सन्ध्यावन्दनम्. He needs to hear each word slowly and see exactly which one is being said.
 
 **What they do.**
 1. His father prepares the Sandhyavandanam (Krishna Yajurveda) pack. It is created and **awaiting the text and a recording**.
@@ -69,7 +69,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 5. A family sankalpa of 108 parayanams
 
-**Situation.** A family resolves to complete 108 readings together over the weeks of a vow. Each home keeps its own count, and they wish to know the family total.
+**Situation.** A family with homes in Chennai and Delhi resolves to complete 108 readings together over the weeks of a vow. Each home keeps its own count, and they wish to know the family total.
 
 **What they do (as designed).**
 1. Each phone keeps its own tally.
@@ -84,7 +84,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 6. A volunteer preparing a new stotra
 
-**Situation.** A teacher at a community hall wants a new stotra in the Reader for the neighbourhood. She is not a programmer. She has the text and a recording she is allowed to use.
+**Situation.** A teacher at a community hall in Pune wants a new stotra in the Reader for the neighbourhood. She is not a programmer. She has the text and a recording she is allowed to use.
 
 **What they do.**
 1. Install Vāk Studio and connect it to **Claude Desktop**.
@@ -102,7 +102,7 @@ Seven short stories. The people are illustrations, not real individuals. Each en
 
 ## 7. An older iPad, opened from WhatsApp
 
-**Situation.** A grandmother has an older iPad. Her granddaughter sends the Reader file over WhatsApp.
+**Situation.** A grandmother in Delhi has an older iPad. Her granddaughter sends the Reader file over WhatsApp.
 
 **What they do.**
 1. She taps the file. The prayer text is written into the page itself, so even the file preview shows the prayer.

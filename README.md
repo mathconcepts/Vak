@@ -4,9 +4,9 @@
 
 ---
 
-It is a little before six in the morning. Amma sits in front of the small altar with a printed copy of the श्रीललितासहस्रनाम, the pages soft from years of use. A recording plays from the phone. Halfway through, she turns a page, looks up at the lamp, and when she looks down the voice has moved on. Which line is it now? She finds the place, loses it again.
+It is a little before six in the morning in Chennai. Amma sits in front of the small altar with a printed copy of the श्रीललितासहस्रनाम, the pages soft from years of use. A recording plays from the phone. Halfway through, she turns a page, looks up at the lamp, and when she looks down the voice has moved on. Which line is it now? She finds the place, loses it again.
 
-Far away, her son knows this. He would like her morning to be a little easier, without teaching anyone a new gadget.
+In Bangalore, her son knows this. He would like her morning to be a little easier, without teaching anyone a new gadget.
 
 That is the whole reason Vāk exists.
 
