@@ -1,0 +1,1145 @@
+<title>Vāk Puja Reader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one lamp-lit reading column between a header (title, credit, mode) and a dock with only the daily controls. Big targets for older hands. */
+:root{
+  --bg:#1a120e;        /* oiled teak */
+  --panel:#24190f;
+  --line:#3a2a1d;
+  --fg:#efe3cc;        /* ivory */
+  --muted:#a8957b;
+  --dim:#6f5e4a;
+  --sindoor:#e0532f;   /* accent */
+  --haldi:#f2b440;     /* lit text */
+  --haldi-soft:rgba(242,180,64,.12);
+  --ok:#7fb36a;
+  --f-text:"Tiro Devanagari Sanskrit","Noto Serif Devanagari","Sanskrit Text","Mangal",serif;
+  --f-ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+  --scale:1.15;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
+    --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
+  --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;display:flex;flex-direction:column;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);font-size:17px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--haldi);outline-offset:2px}
+
+/* header */
+.top{position:relative;flex:none;z-index:20;background:var(--bg);background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:52rem;margin:0 auto;padding:.6rem 16px;display:flex;align-items:center;gap:.6rem}
+.lib-btn{display:flex;flex-direction:column;align-items:flex-start;background:none;border:0;padding:.15rem .25rem;min-width:0;flex:1 1 0;text-align:left;border-radius:8px}
+.lib-btn:hover{background:var(--haldi-soft)}
+.lib-btn .t{font-family:var(--f-text);font-size:1.15rem;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.lib-btn .s{font-size:.78rem;color:var(--muted);letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.lib-btn .s::after{content:" ▾";color:var(--sindoor)}
+.seg{flex:none;display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--panel)}
+.seg button{border:0;background:none;padding:.45rem 1.05rem;border-radius:999px;font-weight:700;font-size:1rem;color:var(--muted);min-height:2.6rem}
+.seg button[aria-pressed="true"]{background:var(--sindoor);color:#fff7ee}
+.icon-btn{flex:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;width:2.75rem;height:2.75rem;display:grid;place-items:center;font-weight:700;font-size:1.05rem}
+.credit{max-width:52rem;margin:0 auto;padding:0 16px .45rem;font-size:.82rem;color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.credit b{color:var(--sindoor);font-weight:700}
+.credit .sep{color:var(--dim);margin:0 .35em}
+
+/* reading column */
+.stage{flex:1 1 auto;min-height:0;position:relative}
+.scroller{position:absolute;top:0;right:0;bottom:0;left:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh}
+.hint{color:var(--muted);font-size:.95rem;margin:0 0 1.25rem;padding-left:.8rem;border-left:2px solid var(--line)}
+.hint:empty{display:none}
+/* shown until the app has started: in a file preview (no JavaScript) it explains, the text below stays readable */
+.nojs{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--sindoor);border-radius:16px;padding:1.2rem 1.3rem;margin:0 0 1.75rem}
+.nojs h2{margin:0 0 .5rem;font-size:1.25rem}
+.nojs p{margin:.4rem 0 0;font-size:1.05rem;color:var(--muted)}
+.nojs b{color:var(--fg)}
+/* welcome card: first visit, and again from the ? guide */
+.welcome{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:1.4rem 1.3rem 1.2rem;margin:0 0 1.75rem;display:flex;flex-direction:column;gap:.85rem}
+.welcome .wt{font-family:var(--f-text);font-size:1.9rem;line-height:1.2;margin:0;text-wrap:balance}
+.welcome .wt small{display:block;font-family:var(--f-ui);font-size:.9rem;color:var(--muted);font-weight:500;margin-top:.15rem}
+.welcome .by{margin:0;color:var(--muted);font-size:.95rem}
+.welcome .by b{color:var(--sindoor)}
+.welcome .bite{margin:0;font-family:var(--f-text);font-style:italic;font-size:1.25rem;color:var(--haldi)}
+.steps{list-style:none;margin:.2rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem;counter-reset:s}
+.steps li{display:flex;gap:.8rem;align-items:flex-start;font-size:1.05rem;counter-increment:s}
+.steps li::before{content:counter(s);flex:none;width:2rem;height:2rem;border-radius:50%;display:grid;place-items:center;background:var(--sindoor);color:#fff7ee;font-weight:700;font-size:1rem}
+.steps li b{font-weight:700}
+.hint b{color:var(--fg);font-weight:500}
+.sec-h{font-family:var(--f-text);color:var(--sindoor);text-align:center;font-size:calc(1.25rem*var(--scale));margin:2.2rem 0 1rem;text-wrap:balance}
+.note{font-family:var(--f-ui,inherit);font-style:italic;color:var(--dim);text-align:center;font-size:calc(.95rem*var(--scale));margin:1rem auto;max-width:34em}
+.sec-h::before,.sec-h::after{content:"✦";font-size:.6em;color:var(--dim);margin:0 .6em;vertical-align:.25em}
+.verse{margin:0 0 1.15rem;padding:.2rem 0}
+.ln{font-family:var(--f-text);font-size:calc(1.42rem*var(--scale));line-height:1.75;color:var(--muted);padding:.1rem .6rem;margin:0 -.6rem;border-radius:10px;cursor:pointer;transition:color .25s,background .25s;overflow-wrap:anywhere}
+.ln.past{color:var(--dim)}
+.ln.cur{color:var(--fg);background:var(--haldi-soft);box-shadow:inset 3px 0 0 var(--haldi)}
+.ln.skip{opacity:.38}
+.ln.skip.cur{opacity:1}
+.ln.unsynced::after{content:"•";color:var(--sindoor);margin-left:.3em;font-size:.7em;vertical-align:.4em}
+/* Devanagari marks (ि ी े ं ॐ, viramas) reach beyond the font's em box; the karaoke fill paints
+   through background-clip:text, which only paints inside the span's box. Extra vertical padding
+   widens that box over the marks. Inline vertical padding does not move the line layout, and the
+   small side padding is cancelled by an equal negative margin. */
+.w{--p:0%;padding:.6em .3em;margin:0 -.3em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.ln.cur .w{background:linear-gradient(90deg,var(--haldi) var(--p),var(--fg) var(--p));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ln.cur .w.done{background:none;color:var(--haldi)}
+.ln.target{box-shadow:inset 3px 0 0 var(--sindoor);background:var(--haldi-soft);background:color-mix(in srgb,var(--sindoor) 10%,transparent);color:var(--fg)}
+.source{color:var(--dim);font-size:.82rem;text-align:center;margin-top:2.5rem}
+.source a{color:var(--muted)}
+
+/* dock */
+.dock{position:relative;flex:none;z-index:20;background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -10px 30px rgba(0,0,0,.18)}
+.dock-in{max-width:44rem;margin:0 auto;padding:.55rem 16px;display:flex;flex-direction:column;gap:.55rem}
+.bar{display:flex;align-items:center;gap:.6rem}
+.bar-main{display:flex;align-items:center;gap:.6rem;flex:1 1 auto;min-width:0}
+.prog{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:0}
+.prog .seek{flex:none;width:100%;min-width:0;height:1.7rem;margin:0}
+.times{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;padding:0 .2rem}
+#playBtn,#micBtn{min-width:6.5rem;min-height:3.1rem;padding:.6rem 1.1rem}
+.bar .btn.ghost{min-width:3.4rem;padding:.6rem .9rem;flex:none}
+.bar .btn{white-space:nowrap}
+.more-btn{flex:none;min-height:3.1rem}
+.dock .tapbtn{flex:1 1 auto;width:auto;padding:.85rem 1rem;font-size:1.05rem}
+.row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+.grow{flex:1 1 auto;min-width:0}
+.btn{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:.6rem 1rem;font-weight:500;display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:2.9rem}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--sindoor);border-color:var(--sindoor);color:#fff7ee}
+.btn.big{padding:.8rem 1.5rem;font-size:1.2rem;font-weight:700;border-radius:16px;min-height:3.5rem;min-width:8.5rem}
+.btn.on{border-color:var(--haldi);color:var(--haldi)}
+.btn:disabled{opacity:.45;cursor:default}
+.status{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.meter{position:absolute;top:0;left:0;right:0;height:4px;background:var(--line);overflow:hidden}
+.meter i{position:absolute;top:0;bottom:0;left:0;width:0;background:var(--ok);transition:width .06s linear}
+.meter b{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--sindoor)}
+.seek{flex:1 1 8rem;min-width:6rem;accent-color:var(--sindoor);height:2rem}
+.more{display:flex;flex-direction:column;gap:.6rem;padding:.75rem;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+.more .lbl{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.switch{display:inline-flex;align-items:center;gap:.55rem;border:0;background:none;padding:.3rem 0;font-weight:700;color:var(--fg);min-height:2.6rem}
+.switch .trk{width:2.4rem;height:1.4rem;border-radius:999px;background:var(--line);position:relative;transition:background .2s;flex:none}
+.switch .trk::after{content:"";position:absolute;top:.15rem;left:.15rem;width:1.1rem;height:1.1rem;border-radius:50%;background:var(--fg);transition:transform .2s}
+.switch[aria-checked="true"] .trk{background:var(--sindoor)}
+.switch[aria-checked="true"] .trk::after{transform:translateX(1rem);background:#fff7ee}
+.tapbtn{width:100%;padding:1.1rem;font-size:1.25rem;border-radius:16px;border:0;background:var(--haldi);color:#1a120e;font-weight:700}
+.pill{position:absolute;left:50%;transform:translateX(-50%);top:10px;z-index:21;border:0;border-radius:999px;padding:.45rem 1rem;font-size:.92rem;opacity:.94;background:var(--fg);color:var(--bg);font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.toast{position:fixed;left:50%;top:calc(4.5rem + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:40;background:var(--fg);color:var(--bg);padding:.5rem 1rem;border-radius:10px;font-size:.92rem;max-width:min(30rem,calc(100% - 32px));text-align:center}
+
+/* sheets */
+.scrim{position:fixed;top:0;right:0;bottom:0;left:0;z-index:30;background:rgba(10,6,4,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);width:100%;max-width:40rem;max-height:86%;overflow:auto;border-radius:18px 18px 0 0;padding:1.2rem 16px calc(1.2rem + env(safe-area-inset-bottom,0px));border:1px solid var(--line);display:flex;flex-direction:column;gap:.9rem}
+.sheet h2{margin:0;font-size:1.3rem}
+.guide{gap:1rem}
+.guide .wt{font-family:var(--f-text);font-size:1.6rem;margin:0}
+.guide .by{margin:-.5rem 0 0;color:var(--muted);font-size:.92rem}
+.guide .by b{color:var(--sindoor)}
+.guide h3{font-size:.85rem}
+.guide p,.guide li{font-size:1.02rem}
+.guide ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem}
+.guide .bite{font-family:var(--f-text);font-style:italic;color:var(--haldi);font-size:1.15rem;text-align:center;margin:.4rem 0 0}
+.sheet h3{margin:.4rem 0 0;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.lib-list{display:flex;flex-direction:column;gap:.4rem}
+.lib-item{display:flex;align-items:center;gap:.5rem;border:1px solid var(--line);border-radius:12px;padding:.6rem .75rem;background:var(--bg)}
+.lib-item.sel{border-color:var(--haldi)}
+.lib-item button.open{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0}
+.lib-item .t{font-family:var(--f-text);font-size:1.1rem;display:block}
+.lib-item .s{font-size:.8rem;color:var(--muted)}
+.del{border:0;background:none;color:var(--muted);font-size:.85rem;padding:.3rem .5rem;border-radius:8px}
+.del.arm{background:var(--sindoor);color:#fff7ee}
+label.f{display:flex;flex-direction:column;gap:.3rem;font-size:.9rem;color:var(--muted)}
+input[type=text],textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:.55rem .7rem}
+textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height:1.6;resize:vertical}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.set-row input[type=range]{flex:1 1 10rem;accent-color:var(--sindoor)}
+.small{font-size:.82rem;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:480px){.ln{font-size:calc(1.25rem*var(--scale))}.seg button{padding:.35rem .7rem}.lib-btn .t{font-size:1rem}.lib-btn .s{display:none}.credit{font-size:.78rem;padding-bottom:.35rem}.credit .cr3{display:none}.top-in{padding-block:.45rem}#playBtn,#micBtn{min-width:5.6rem;padding-inline:.9rem}.welcome .wt{font-size:1.6rem}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <button class="lib-btn" id="libBtn" aria-label="Open library">
+      <span class="t" id="txtTitle">__TITLE0__</span>
+      <span class="s" id="txtSub">Library</span>
+    </button>
+    <div class="seg" role="group" aria-label="Mode" hidden data-js>
+      <button id="mMusic" aria-pressed="true">Music</button>
+      <button id="mRecite" aria-pressed="false">Recite</button>
+    </div>
+    <button class="icon-btn" id="helpBtn" aria-label="How to use" hidden data-js>?</button>
+    <button class="icon-btn" id="setBtn" aria-label="Reading settings" hidden data-js>Aa</button>
+  </div>
+  <p class="credit">Created by <b>MSP Giri</b><span class="sep">·</span>Inspired by Navarathri 2026<span class="sep cr3">·</span><span class="cr3">With Jagadamba's blessings, more to come</span></p>
+</header>
+
+<div class="stage"><div class="scroller" id="scroller">
+<main id="main">
+  <section class="nojs" id="nojs">
+    <h2>This preview shows the prayer, but cannot play it.</h2>
+    <p>The iPad is showing a quick preview, which does not run the app. To hear the recitation and see each word light up, open <b>Vāk Puja Reader</b> in <b>Safari</b>, or open this file on a laptop.</p>
+    <p>The full text is below for reading.</p>
+  </section>
+  <section class="welcome" id="welcome" hidden aria-labelledby="wT">
+    <h1 class="wt" id="wT">Vāk Puja Reader<small>Your daily puja, word by word</small></h1>
+    <p class="by">Created by <b>MSP Giri</b>, inspired by Navarathri 2026. With Jagadamba's blessings, more will follow.</p>
+    <p class="bite">__BITE0__</p>
+    <ol class="steps">
+      <li><span>Choose <b>Music</b> at the top to chant with the recording, or <b>Recite</b> to chant on your own.</span></li>
+      <li><span>Press the big red button at the bottom: <b>Play</b> or <b>Listen</b>.</span></li>
+      <li><span>Chant along. The word in <b>gold</b> is where you are. The page moves by itself.</span></li>
+    </ol>
+    <div class="row"><button class="btn primary big" id="wBegin">Begin</button><button class="btn" id="wGuide">Read the full guide</button></div>
+  </section>
+  <div class="hint" id="hint"></div>
+  <div id="text">__PRERENDER__</div>
+  <p class="source" id="source"></p>
+</main>
+</div>
+<button class="pill" id="backPill" hidden>Back to current line</button>
+</div>
+
+<div class="dock" hidden data-js>
+<div class="meter" id="meter" hidden title="Your voice level"><i></i><b></b></div>
+<div class="dock-in" id="dock">
+  <div class="bar">
+    <!-- recite -->
+    <div id="dRecite" class="bar-main">
+      <button class="btn primary big" id="micBtn">Listen</button>
+      <button class="btn big ghost" id="prevBtn" aria-label="Previous line">◀</button>
+      <button class="btn big ghost" id="nextBtn" aria-label="Next line">▶</button>
+    </div>
+    <!-- music -->
+    <div id="dMusic" class="bar-main" hidden>
+      <div class="bar-main" id="playRow">
+        <button class="btn primary big" id="playBtn" disabled>Play</button>
+        <div class="prog">
+          <input type="range" class="seek" id="seek" min="0" max="1000" value="0" disabled aria-label="Position in the recording">
+          <div class="times"><span id="tNow">0:00</span><span id="tDur">0:00</span></div>
+        </div>
+      </div>
+      <div id="calRow" hidden class="bar-main">
+        <button class="tapbtn" id="calTap">Tap when you hear a new line begin</button>
+        <button class="btn" id="calCancel">Cancel</button>
+      </div>
+      <div id="tapRow" hidden class="bar-main">
+        <button class="tapbtn" id="tapBtn">Tap as this line begins</button>
+        <button class="btn" id="tapUndo">Undo</button>
+        <button class="btn" id="tapDone">Finish</button>
+      </div>
+    </div>
+    <button class="btn more-btn" id="moreBtn" aria-expanded="false" aria-controls="morePanel">More</button>
+  </div>
+  <div class="more" id="morePanel" hidden>
+    <div class="row"><button class="switch" id="asBtn" role="switch" aria-checked="true"><span class="trk"></span>Auto-scroll</button><span class="status grow" id="stat" style="text-align:right"></span></div>
+    <div class="row"><button class="switch" id="awakeBtn" role="switch" aria-checked="true"><span class="trk"></span>Keep screen on</button></div>
+    <div id="moreMusic">
+      <span class="lbl">Speed</span>
+      <div class="row">
+        <select id="rate" class="btn" aria-label="Playback speed">
+          <option value="0.75">0.75× slower</option><option value="0.9">0.9×</option><option value="1" selected>1× normal</option><option value="1.1">1.1×</option><option value="1.25">1.25× faster</option>
+        </select>
+      </div>
+      <span class="lbl">Recording</span>
+      <div class="row">
+        <span class="status grow" id="fileName">No recording yet</span>
+        <button class="btn" id="builtinBtn" hidden>Built-in recording</button>
+        <button class="btn" id="fileBtn">Choose recording</button>
+        <input type="file" id="fileIn" accept="audio/*,video/mp4,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac" hidden>
+      </div>
+      <span class="lbl">Timing</span>
+      <div class="row" id="syncRow">
+        <button class="btn" id="tapAlongBtn" disabled>Tap along to sync</button>
+        <button class="btn" id="adjustBtn" disabled aria-pressed="false">Adjust timing</button>
+      </div>
+      <div class="row" id="adjustRow" hidden>
+        <button class="btn" id="nudgeMinus">Line starts earlier −0.25s</button>
+        <button class="btn" id="nudgePlus">Later +0.25s</button>
+        <span class="small grow">Tap any line while it plays to mark its start.</span>
+        <button class="btn" id="resetSync" hidden>Reset to original timing</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- library sheet -->
+<div class="scrim" id="libSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="libH">
+    <div class="row"><h2 id="libH" class="grow">Your texts</h2><button class="btn" id="libClose">Close</button></div>
+    <div class="lib-list" id="libList"></div>
+    <h3>Add a text</h3>
+    <label class="f" for="newTitle">Title
+      <input type="text" id="newTitle" placeholder="e.g. संध्यावन्दनम् (Yajurveda)">
+    </label>
+    <label class="f" for="newBody">Text, in any script
+      <textarea id="newBody" placeholder="Paste the text here.
+Leave a blank line between verses.
+A line like ॥ ध्यानम् ॥ on its own becomes a section heading."></textarea>
+    </label>
+    <div class="row"><button class="btn primary" id="addBtn">Add to library</button><span class="small grow" id="addMsg"></span></div>
+  </div>
+</div>
+
+<!-- settings sheet -->
+<div class="scrim" id="setSheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setH">
+    <div class="row"><h2 id="setH" class="grow">Reading settings</h2><button class="btn" id="setClose">Close</button></div>
+    <div class="set-row"><span>Text size</span><input type="range" id="sScale" min="0.8" max="1.8" step="0.05"></div>
+    <div class="set-row"><span>Show word breaks (‐)</span><button class="btn" id="sBreaks" aria-pressed="true">On</button></div>
+    <h3>Recite mode</h3>
+    <div class="set-row"><span>Pause that confirms a line end</span><input type="range" id="sPause" min="0.08" max="1" step="0.02"><span class="status" id="sPauseV"></span></div>
+    <div class="set-row"><span>Microphone sensitivity</span><input type="range" id="sSens" min="1.6" max="6" step="0.1"><span class="status" id="sSensV"></span></div>
+    <h3>Music mode</h3>
+    <div class="set-row"><span>Highlight delay</span><input type="range" id="sLag" min="0" max="3" step="0.05"><span class="status" id="sLagV"></span></div>
+    <div class="row"><button class="btn" id="calBtn">Calibrate by tapping</button><button class="btn" id="lagZero">Reset to 0</button></div>
+    <p class="small">The timing is exact to each word, so a wired or phone speaker needs no delay. A Bluetooth speaker plays a little late: press Calibrate, then tap each time you hear a new line begin.</p>
+    <p class="small">While you chant, the highlight moves at your pace and stops when you stop. A pause near the end of a line confirms it; a breath early in a line is ignored. If it runs ahead or falls behind, tap Back or Next once and it adjusts its pace. If it misses your voice, raise sensitivity.</p>
+  </div>
+</div>
+
+<!-- guide sheet -->
+<div class="scrim" id="guideSheet" hidden>
+  <div class="sheet guide" role="dialog" aria-modal="true" aria-labelledby="gT">
+    <div class="row"><h2 class="wt grow" id="gT">Vāk Puja Reader</h2><button class="btn" id="guideClose">Close</button></div>
+    <p class="by">Created by <b>MSP Giri</b>, inspired by Navarathri 2026. With Jagadamba's blessings, more will follow.</p>
+    <h3>Chant with the recording</h3>
+    <ul>
+      <li>Press <b>Music</b> at the top, then the big <b>Play</b> button.</li>
+      <li>The word in gold is the word being sung. The page moves by itself.</li>
+      <li>Tap any line to jump there. Drag the slider to move through the recording.</li>
+      <li>Faded lines are not sung in this recording.</li>
+    </ul>
+    <h3>Chant on your own</h3>
+    <ul>
+      <li>Press <b>Recite</b>, then <b>Listen</b>. Stay quiet for one second.</li>
+      <li>Chant at your usual pace. The light follows you and waits when you pause.</li>
+      <li>If it runs ahead or behind, press <b>Back</b> or <b>Next</b> once. It learns your pace.</li>
+    </ul>
+    <h3>Little helpers</h3>
+    <ul>
+      <li>The screen stays on while the app is open. To let it sleep: <b>More</b> → <b>Keep screen on</b>.</li>
+      <li><b>Aa</b> makes the letters bigger or smaller.</li>
+      <li><b>More</b> → <b>Auto-scroll</b> off lets you scroll the page yourself.</li>
+      <li><b>More</b> also has the speed, your own recording, and timing fixes.</li>
+      <li>Bluetooth speaker running late? <b>Aa</b>, then <b>Calibrate by tapping</b>.</li>
+      <li>Tap the prayer name at the top left to open the library or add a new prayer.</li>
+    </ul>
+    <p class="bite">__BITE1__</p>
+    <div class="row"><button class="btn" id="guideWelcome">Show the welcome card again</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* prayer packs built into this file by Vāk Studio (packs/<id>/pack.json) */
+const BUILTIN = __PACKS__.map(p=>Object.assign({builtin:true},p));
+const isVerse = v => Array.isArray(v);
+/* the recording itself is either embedded in this file or reachable at recording.src; timings alone still sync a file the user picks */
+function hasBuiltinAudio(t){ t=t||curText(); const r=t.recording; return !!(r&&(r.src||document.getElementById("embeddedAudio-"+t.id)||document.getElementById("embeddedAudio"))); }   // a verse is a list of lines; {note:"…"} is an instruction, shown but not chanted
+
+/* ---------- small utils ---------- */
+const $ = id => document.getElementById(id);
+const LS = {
+  get(k,d){try{const v=localStorage.getItem("vak."+k);return v==null?d:JSON.parse(v)}catch{return d}},
+  set(k,v){try{localStorage.setItem("vak."+k,JSON.stringify(v))}catch{}}
+};
+const fmt = s => { s=Math.max(0,s|0); return (s/60|0)+":"+String(s%60).padStart(2,"0"); };
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let toastT;
+function toast(msg,ms=2600){const t=$("toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,ms);}
+function hash(s){let h=2166136261;for(const c of s){h^=c.codePointAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(36);}
+
+/* Syllable weight: aksharas ≈ vowels + consonants − viramas (conjuncts count once). Latin: vowel groups. */
+function weight(tok){
+  let n=0,v=0;
+  for(const ch of tok){
+    const c=ch.codePointAt(0);
+    if((c>=0x0904&&c<=0x0939)||(c>=0x0958&&c<=0x0961)||(c>=0x0972&&c<=0x097F)) n++;
+    else if(c===0x094D) v++;
+  }
+  if(n) return Math.max(1,n-v);
+  const m=tok.match(/[aeiouāīūṛṝḷēōAEIOU]+/g); return m?m.length:0;
+}
+
+/* ---------- storage: claude db when available, this browser otherwise ---------- */
+const Store = {
+  db:null, uid:null, docs:LS.get("docs",{}),
+  async connect(){
+    try{
+      if(!window.claude||!window.claude.use) return false;
+      const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+      if(!db||!user) return false;
+      const id=await user.id(); if(!id) return false;
+      this.db=db; this.uid=id;
+      const snap=await this.col().get();
+      const remote={}; snap.docs.forEach(d=>{remote[d.id]=d.data()});
+      // push any local-only docs up once, then trust the store
+      for(const [k,v] of Object.entries(this.docs)) if(!remote[k]){ try{await this.col().doc(k).set(v);remote[k]=v}catch{} }
+      this.docs=remote; LS.set("docs",remote); return true;
+    }catch(e){ this.db=null; return false; }
+  },
+  col(){ return this.db.collection("data/users/"+this.uid); },
+  all(prefix){ return Object.entries(this.docs).filter(([k])=>k.startsWith(prefix)).map(([k,v])=>({key:k,...v})); },
+  get(k){ return this.docs[k]; },
+  async put(k,v){
+    this.docs[k]=v; LS.set("docs",this.docs);
+    if(this.db){ try{await this.col().doc(k).set(v)}catch(e){ if(e&&e.code==="quota_exceeded") toast("Storage is full. Remove a text you no longer use."); } }
+  },
+  async del(k){
+    delete this.docs[k]; LS.set("docs",this.docs);
+    if(this.db){ try{await this.col().doc(k).delete()}catch{} }
+  }
+};
+
+/* audio blobs stay on this device (IndexedDB) */
+const Audio_ = {
+  _db:null,
+  open(){ if(this._db) return this._db; this._db=new Promise((res,rej)=>{try{const r=indexedDB.open("vak",1);r.onupgradeneeded=()=>r.result.createObjectStore("audio");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e)}}); return this._db; },
+  async put(k,blob){ try{const d=await this.open();await new Promise((res,rej)=>{const t=d.transaction("audio","readwrite");t.objectStore("audio").put(blob,k);t.oncomplete=res;t.onerror=()=>rej(t.error)});return true}catch{return false} },
+  async get(k){ try{const d=await this.open();return await new Promise((res)=>{const r=d.transaction("audio").objectStore("audio").get(k);r.onsuccess=()=>res(r.result||null);r.onerror=()=>res(null)})}catch{return null} }
+};
+
+/* ---------- state ---------- */
+const S = {
+  textId: LS.get("textId",BUILTIN[0].id),
+  mode: LS.get("mode","music"),
+  scale: LS.get("scale2",1.15),
+  breaks: LS.get("breaks",true),
+  pause: LS.get("pause3",0.2),
+  sens: LS.get("sens",3),
+  pace: LS.get("pace2",0.28),  // seconds per syllable, learned while you recite
+  lag: LS.get("lag2",0),       // seconds the speaker output trails the player clock (music mode)
+  cur:0, lines:[], els:[],
+  audioKey:null, audioName:"", times:[], syncKey:null, rec:null, extraCues:[], skip:new Set(),
+  autoscroll: LS.get("autoscroll",true),
+  pauseUntil:0
+};
+
+function allTexts(){
+  const user=Store.all("text-").map(d=>({id:d.key,title:d.title,sub:d.sub||"Added by you",sections:d.sections,source:""}));
+  return [...BUILTIN,...user];
+}
+function curText(){ return allTexts().find(t=>t.id===S.textId)||BUILTIN[0]; }
+
+/* ---------- render text ---------- */
+function render(){
+  const t=curText();
+  $("txtTitle").textContent=t.title; $("txtSub").textContent=t.sub||"Library";
+  $("source").innerHTML=t.source||"";
+  if(t.recording) $("builtinBtn").textContent=t.recording.label||"Built-in recording";
+  const root=$("text"); root.textContent="";
+  S.lines=[]; S.els=[];
+  t.sections.forEach((sec,si)=>{
+    if(sec.title){const h=document.createElement("h2");h.className="sec-h";h.textContent=sec.title;root.appendChild(h);}
+    sec.verses.forEach(v=>{
+      if(!isVerse(v)){ const n=document.createElement("p"); n.className="note"; n.textContent=v.note; root.appendChild(n); return; }
+      const vd=document.createElement("div"); vd.className="verse";
+      v.forEach(line=>{
+        const i=S.lines.length;
+        const toks=line.trim().split(/\s+/).filter(Boolean);
+        const el=document.createElement("div"); el.className="ln"; el.dataset.i=i;
+        const words=[]; let total=0;
+        toks.forEach((tok,ti)=>{
+          const sp=document.createElement("span"); sp.className="w";
+          sp.textContent=S.breaks?tok.replace(/-/g,"‐"):tok.replace(/-/g,"");
+          const w=weight(tok); total+=w; words.push({el:sp,w,end:total});
+          el.appendChild(sp); if(ti<toks.length-1) el.appendChild(document.createTextNode(" "));
+        });
+        S.lines.push({text:line,words,weight:Math.max(1,total)}); S.els.push(el); vd.appendChild(el);
+      });
+      root.appendChild(vd);
+    });
+  });
+  S.cur=Math.min(LS.get("pos."+t.id,0),S.lines.length-1);
+  paintAll(); setCur(S.cur,{scroll:"instant"});
+  updateHint();
+}
+
+function paintAll(){
+  S.els.forEach((el,i)=>{
+    el.classList.toggle("past",i<S.cur); el.classList.toggle("cur",i===S.cur);
+    const sk=S.mode==="music"&&S.skip.has(i);
+    el.classList.toggle("skip",sk);
+    el.classList.toggle("unsynced",S.mode==="music"&&!sk&&!!S.audioKey&&S.times.length>0&&S.times[i]==null);
+  });
+}
+
+let lastCur=-1;
+function setCur(i,opt={}){
+  i=Math.max(0,Math.min(S.lines.length-1,i));
+  const prev=S.cur; S.cur=i;
+  if(prev!==i||lastCur!==i){
+    const a=Math.min(prev,i),b=Math.max(prev,i);
+    for(let k=a;k<=b;k++){const el=S.els[k];if(!el)continue;el.classList.toggle("past",k<i);el.classList.toggle("cur",k===i);}
+    if(S.els[prev]&&prev!==i) fill(prev,prev<i?1:0);
+    fill(i,0);
+    lastCur=i;
+    LS.set("pos."+S.textId,i);
+  }
+  if(opt.scroll!=="none") follow(opt.scroll==="instant");
+  status();
+}
+
+function fill(i,p){
+  const L=S.lines[i]; if(!L) return;
+  const at=p*L.weight;
+  for(const w of L.words){
+    const start=w.end-w.w;
+    const f=w.w===0?(at>=start?1:0):Math.max(0,Math.min(1,(at-start)/w.w));
+    w.el.classList.toggle("done",f>=1);
+    w.el.style.setProperty("--p",(f*100).toFixed(1)+"%");
+  }
+}
+
+/* ---------- auto-scroll: keep the current line at a fixed reading height ---------- */
+const SC=$("scroller");
+let resumeT=0;
+/* word-accurate karaoke: each word fills while it is being chanted */
+function fillWords(i,t,ws){
+  const L=S.lines[i]; if(!L) return;
+  let lastEnd=-1;
+  L.words.forEach((w,k)=>{
+    const tm=ws[k]; let f;
+    if(tm){ f=Math.max(0,Math.min(1,(t-tm[0])/Math.max(0.05,tm[1]-tm[0]))); lastEnd=tm[1]; }
+    else f=(lastEnd>=0&&t>=lastEnd)?1:0;   // dandas and verse numbers light up after the word before them
+    w.el.classList.toggle("done",f>=1);
+    w.el.style.setProperty("--p",(f*100).toFixed(1)+"%");
+  });
+}
+function follow(instant,force){
+  const el=S.els[S.cur]; if(!el) return;
+  if(!S.autoscroll&&!force){ $("backPill").hidden=true; return; }
+  const left=S.pauseUntil-Date.now();
+  if(left>0&&!force){
+    $("backPill").hidden=false;
+    clearTimeout(resumeT); resumeT=setTimeout(()=>follow(false),left+50);
+    return;
+  }
+  S.pauseUntil=0; $("backPill").hidden=true;
+  const er=el.getBoundingClientRect(), sr=SC.getBoundingClientRect();
+  const delta=er.top-sr.top-SC.clientHeight*0.3;
+  if(Math.abs(delta)<2) return;
+  SC.scrollTo({top:SC.scrollTop+delta,behavior:(instant||reduced)?"auto":"smooth"});
+}
+// only your own scrolling of the text pauses following (not the seek bar or buttons)
+function userScrolled(){ if(!S.autoscroll) return; S.pauseUntil=Date.now()+5000; follow(); }
+SC.addEventListener("wheel",userScrolled,{passive:true});
+SC.addEventListener("touchmove",userScrolled,{passive:true});
+addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("input,textarea,select")) return;
+  if(["ArrowUp","ArrowDown","PageUp","PageDown","Home","End"].includes(e.key)) userScrolled();
+});
+$("backPill").onclick=()=>{ S.pauseUntil=0; follow(false,true); };
+function paintSwitch(){ $("asBtn").setAttribute("aria-checked",S.autoscroll); }
+$("asBtn").onclick=()=>{
+  S.autoscroll=!S.autoscroll; LS.set("autoscroll",S.autoscroll); paintSwitch();
+  if(S.autoscroll){ S.pauseUntil=0; follow(false,true); toast("Auto-scroll on",1400); }
+  else { $("backPill").hidden=true; toast("Auto-scroll off. Scroll the text yourself.",1800); }
+};
+paintSwitch();
+
+/* line clicks */
+$("text").addEventListener("click",e=>{
+  const el=e.target.closest(".ln"); if(!el) return;
+  const i=+el.dataset.i;
+  S.pauseUntil=0;
+  if(S.mode==="music"){
+    if(Tap.on) return;
+    if(Music.adjusting&&Music.el&&!isNaN(Music.el.duration)){ Music.mark(i); return; }
+    if(S.times[i]!=null&&Music.el){ Music.el.currentTime=S.times[i]+0.01; Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); return; }
+    setCur(i); return;
+  }
+  Voice.resetLine(); setCur(i);
+});
+
+/* ---------- status + hints ---------- */
+function verseOf(i){ const m=S.lines[i]?.text.match(/॥\s*([०-९0-9]+)\s*॥/); return m?m[1]:null; }
+function status(){
+  const n=S.lines.length;
+  const txt=`Line ${S.cur+1} of ${n}`;
+  $("stat").textContent=S.mode==="recite"?txt+" · "+Voice.label():(Tap.on?`Tapping line ${S.cur+1} of ${n}`:(S.audioKey?txt+" · "+syncSummary():txt));
+}
+function syncSummary(){
+  const done=S.times.filter(t=>t!=null).length, need=S.lines.length-S.skip.size;
+  if(!done) return "Not synced yet";
+  if(S.rec&&S.rec.words) return "Synced word by word";
+  if(done<need) return `${done} of ${need} lines synced`;
+  return "Fully synced";
+}
+function updateHint(){
+  const h=$("hint");
+  if(S.mode==="recite"){
+    h.innerHTML=Voice.supported
+      ? "<b>Recite:</b> press Listen and chant as usual. The highlight follows your pace and stops when you stop. If it runs ahead or falls behind, tap Back or Next once and it adjusts. Tap any line to jump there."
+      : "<b>Recite:</b> this view can't use the microphone, so move line by line with <b>Next</b>, the Space key, or a tap on the line. For hands-free voice pacing, open the app file in Chrome on your phone or laptop.";
+  }else{
+    h.innerHTML=S.rec
+      ? `Press <b>Play</b>. The word in gold is the word being sung. Faded lines are not in this recording.`
+      : S.audioKey&&S.times.some(t=>t!=null)
+      ? "<b>Music:</b> press Play and the text follows the recording. Use <b>Adjust timing</b> to fix any line that runs early or late."
+      : "<b>Music:</b> choose your recording, then press <b>Tap along to sync</b> and tap once as each line begins. You do this once per recording; after that it follows by itself.";
+  }
+}
+
+/* ---------- mode switch ---------- */
+function setMode(m){
+  S.mode=m; LS.set("mode",m);
+  $("mRecite").setAttribute("aria-pressed",m==="recite"); $("mMusic").setAttribute("aria-pressed",m==="music");
+  $("dRecite").hidden=m!=="recite"; $("dMusic").hidden=m!=="music"; $("moreMusic").hidden=m!=="music"; $("meter").hidden=!(m==="recite"&&Voice.on);
+  if(m!=="recite") Voice.stop();
+  if(m!=="music"){ Music.pause(); Tap.finish(false); }
+  if(m==="music") Music.restoreForText();
+  paintAll(); updateHint(); status();
+}
+$("mRecite").onclick=()=>setMode("recite");
+$("mMusic").onclick=()=>setMode("music");
+
+/* ---------- wake lock ---------- */
+let wake=null;
+/* ---------- keep the screen on while the app is open ----------
+   1) the browser's Screen Wake Lock, where it is offered (secure pages, iPadOS 16.4+, Chrome 84+);
+   2) otherwise a tiny silent video, shaped to meet each engine's own rule for holding the screen:
+      - Chrome (video_wake_lock.cc): a playing video counts if it covers 20% of the view OR is audibly
+        playing (has a sound track and volume above 0). So: unmuted, silent track, volume 0.02.
+      - Safari (HTMLMediaElement::shouldDisableSleep): never for a looping video, and it needs a video
+        with a sound track. So: no loop attribute; we jump back before the end instead. Kept muted on
+        Apple devices so it can never interrupt the recitation.
+   Re-applied whenever the app comes back to the front. */
+const AWAKE_SRC={webm:"__AWAKE_WEBM__",mp4:"__AWAKE_MP4__"};
+const Awake={
+  want: LS.get("awake",true), lock:null, video:null, how:"",
+  on: async function(){
+    if(!this.want||document.visibilityState!=="visible") return;
+    if(this.lock||(this.video&&!this.video.paused)) return;
+    if(navigator.wakeLock&&window.isSecureContext!==false){
+      try{
+        const l=await navigator.wakeLock.request("screen");
+        this.lock=l; this.how="lock";
+        l.addEventListener("release",()=>{ if(this.lock===l) this.lock=null; if(this.want&&document.visibilityState==="visible") this.on(); });
+        if(this.video) this.video.pause();
+        return;
+      }catch(e){ this.lock=null; }
+    }
+    this.videoOn();
+  },
+  videoOn: function(){
+    try{
+      if(!this.video){
+        const v=document.createElement("video");
+        v.setAttribute("playsinline",""); v.setAttribute("webkit-playsinline",""); v.setAttribute("muted",""); v.setAttribute("aria-hidden","true");
+        const apple=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+        v.loop=false; v.disableRemotePlayback=true;
+        if(apple){ v.muted=true; }
+        else { v.muted=false; v.removeAttribute("muted"); v.volume=0.02; }
+        // loop by hand: jump back before the end, so the video never "ends" or counts as looping
+        v.addEventListener("timeupdate",()=>{ if(v.duration&&v.currentTime>v.duration-0.6) v.currentTime=0.05+Math.random()*0.1; });
+        v.addEventListener("ended",()=>{ v.currentTime=0; v.play().catch(()=>{}); });
+        v.style.cssText="position:fixed;left:0;bottom:0;width:2px;height:2px;opacity:0.01;pointer-events:none;z-index:-1";
+        const kind=v.canPlayType('video/mp4; codecs="avc1.42E01E"')?"mp4":"webm";
+        const bin=atob(AWAKE_SRC[kind]); const u=new Uint8Array(bin.length); for(let k=0;k<bin.length;k++) u[k]=bin.charCodeAt(k);
+        v.src=URL.createObjectURL(new Blob([u],{type:"video/"+kind}));
+        document.body.appendChild(v); this.video=v;
+      }
+      const pr=this.video.play();
+      if(pr&&pr.then) pr.then(()=>{ this.how="video"; }).catch(()=>{ this.how=""; });
+    }catch(e){ this.how=""; }
+  },
+  off: function(){
+    if(this.lock){ const l=this.lock; this.lock=null; l.release().catch(()=>{}); }
+    if(this.video) this.video.pause();
+    this.how="";
+  }
+};
+function keepAwake(){ Awake.on(); }
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") Awake.on(); });
+// a tap or key press counts as the permission some phones need before a video may play
+["click","touchend","keydown"].forEach(ev=>document.addEventListener(ev,()=>Awake.on(),{passive:true}));
+
+
+/* ---------- RECITE: voice-paced ---------- */
+const Voice = {
+  supported: !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia),
+  on:false, ctx:null, an:null, stream:null, buf:null, raf:0,
+  floor:0.006, hist:[], frame:0, calibUntil:0, speaking:false,
+  lineSpeech:0, span:0, dipFor:0, quietFor:0, voiceLvl:0, firstAt:null, last:0, lvl:0,
+  label(){
+    if(!this.supported) return "Tap mode";
+    if(!this.on) return "Microphone off";
+    if(performance.now()<this.calibUntil) return "Listening to the room. Stay quiet a moment.";
+    return this.speaking?"Hearing you":"Listening";
+  },
+  resetLine(){ this.lineSpeech=0; this.span=0; this.dipFor=0; this.firstAt=null; this.reanchor=0; this.prevSpan=0; },
+  async start(){
+    try{
+      this.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});
+    }catch(e){
+      this.supported=false; $("micBtn").textContent="Next line"; updateHint(); status();
+      toast("The microphone isn't available here. Use Next or Space to move line by line.",4200);
+      return;
+    }
+    this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const src=this.ctx.createMediaStreamSource(this.stream);
+    this.an=this.ctx.createAnalyser(); this.an.fftSize=1024; src.connect(this.an);
+    this.buf=new Float32Array(this.an.fftSize);
+    this.on=true; this.hist=[]; this.frame=0; this.voiceLvl=0; this.dips=[]; this.dipRef=null; this.calibUntil=performance.now()+700; this.resetLine(); this.last=performance.now();
+    $("micBtn").textContent="Stop"; $("micBtn").classList.remove("primary"); $("meter").hidden=false;
+    keepAwake(true);
+    const loop=()=>{ if(!this.on) return; this.tick(); this.raf=requestAnimationFrame(loop); };
+    loop();
+  },
+  stop(){
+    if(!this.on) return;
+    this.on=false; cancelAnimationFrame(this.raf);
+    try{this.stream.getTracks().forEach(t=>t.stop())}catch{} try{this.ctx.close()}catch{}
+    $("micBtn").textContent=this.supported?"Listen":"Next line"; $("micBtn").classList.add("primary"); $("meter").hidden=true;
+    $("meter").querySelector("i").style.width="0"; status();
+  },
+  tick(){
+    const now=performance.now(), dt=Math.min(0.5,(now-this.last)/1000); this.last=now;
+    this.an.getFloatTimeDomainData(this.buf);
+    let s=0; for(let i=0;i<this.buf.length;i++) s+=this.buf[i]*this.buf[i];
+    const rms=Math.sqrt(s/this.buf.length);
+    this.lvl=this.lvl*0.6+rms*0.4;
+    // room level = the quiet moments of the last ~8 s (10th percentile), so it settles even if you start chanting at once
+    this.hist.push(this.lvl); if(this.hist.length>480) this.hist.shift();
+    if(++this.frame%15===0||this.hist.length<30){
+      const c=this.hist.slice().sort((a,b)=>a-b); let f=Math.max(0.002,c[(c.length*0.1)|0]);
+      if(this.voiceLvl) f=Math.min(f,this.voiceLvl*0.5/Math.max(1,S.sens/2));
+      this.floor=f;
+    }
+    if(now<this.calibUntil){ this.meter(rms); status(); return; }
+    const onT=this.floor*S.sens;
+    const wasSpeaking=this.speaking;
+    // voice present: above the room level. Track your typical chanting loudness while you chant.
+    if(this.lvl>onT){ this.speaking=true; this.voiceLvl=this.voiceLvl?this.voiceLvl*0.995+this.lvl*0.005:this.lvl; }
+    else if(this.lvl<onT*0.7){ this.speaking=false; }
+    // a pause = a clear drop below your own chanting level (works over a fan, AC or a drone)
+    const dip=!this.speaking||(this.voiceLvl&&this.lvl<this.voiceLvl*0.35);
+    // truly quiet = down near the room level (not just softer chanting); only that stops the line clock
+    const silent=this.lvl<Math.max(this.floor*1.6,(this.voiceLvl||0)*0.15);
+    this.quietFor=silent?this.quietFor+dt:0;
+    if(dip){ this.dipFor+=dt; }
+    else {
+      // remember how long your ordinary dips are, so only a pause that stands out can end a line
+      if(this.dipFor>0.04){ this.dips.push(this.dipFor); if(this.dips.length>40) this.dips.shift(); this.dipRef=null; }
+      this.dipFor=0;
+    }
+    if(this.dipRef==null){ const c=this.dips.slice().sort((a,b)=>a-b); this.dipRef=c.length>=8?c[Math.floor(c.length*0.9)]:0.35; }
+    // the line clock runs while you chant; it stops when you have been quiet for a moment
+    if(this.speaking&&this.firstAt==null) this.firstAt=now;
+    if(this.firstAt!=null&&this.quietFor<0.8) this.span+=dt;
+    if(this.speaking) this.lineSpeech+=dt;
+    const L=S.lines[S.cur]; const expected=Math.max(1.2,L.weight*S.pace);
+    const r=this.span/expected;
+    fill(S.cur,Math.min(0.97,r));
+    // 1) a pause right where the line should end confirms the boundary
+    //    (pauses earlier in a line are ignored: breaths inside long names look the same)
+    const confirmed=r>=0.85&&r<=1.2&&this.dipFor>=Math.max(S.pause,this.dipRef*1.15)&&this.lineSpeech>=expected*0.4;
+    // 2) no pause by the end of that window: move on by time, carrying the overshoot.
+    //    Waiting to the end of the window keeps pace learning unbiased (late pauses count as much as early ones).
+    const byTime=r>=1.2&&!confirmed;
+    if(confirmed||byTime){
+      const span=this.span, dipT=this.dipFor;
+      if(confirmed) this.learn((span-dipT)/L.weight);
+      fill(S.cur,1);
+      if(S.cur<S.lines.length-1){
+        this.resetLine();
+        if(byTime){ this.firstAt=now; this.span=span-expected; }
+        setCur(S.cur+1);
+      }
+      else { this.resetLine(); toast("॥ सम्पूर्णम् ॥ Complete.",3500); this.stop(); }
+    }
+    if(wasSpeaking!==this.speaking) status();
+    this.meter(this.lvl);
+  },
+  learn(per){ if(per>S.pace*0.75&&per<S.pace*1.25){ S.pace=Math.max(0.16,Math.min(0.6,S.pace*0.92+per*0.08)); LS.set("pace2",S.pace); } },
+  /* manual correction while listening teaches the pace */
+  correct(d){
+    if(!this.on) return;
+    const L=S.lines[S.cur]; const expected=Math.max(1.2,L.weight*S.pace);
+    if(d>0&&this.span>expected*0.35){ const per=this.span/L.weight; S.pace=Math.max(0.16,Math.min(0.6,S.pace*0.7+per*0.3)); }
+    if(d<0) S.pace=Math.min(0.6,S.pace*1.1);
+    LS.set("pace2",S.pace);
+  },
+  meter(v){
+    const m=$("meter"); const max=Math.max(this.floor*S.sens*3,0.02);
+    m.querySelector("i").style.width=Math.min(100,v/max*100)+"%";
+    m.querySelector("b").style.left=Math.min(98,(this.floor*S.sens)/max*100)+"%";
+  }
+};
+$("micBtn").onclick=()=>{
+  if(!Voice.supported){ step(1); return; }
+  Voice.on?Voice.stop():Voice.start();
+};
+function step(d){ Voice.correct(d); Voice.resetLine(); S.pauseUntil=0; setCur(S.cur+d); }
+$("prevBtn").onclick=()=>step(-1);
+$("nextBtn").onclick=()=>step(1);
+
+/* ---------- MUSIC ---------- */
+const Music = {
+  el:null, url:null, adjusting:false, raf:0, pts:[],
+  playing(){ return this.el&&!this.el.paused; },
+  async load(file,key){ this.attach(URL.createObjectURL(file),file.name||"Recording",key,file.size,true); },
+  builtinFor(key,size){
+    const r=curText().recording; if(!r) return null;
+    return (key===r.key||(size&&size===r.size))?r:null;
+  },
+  loadBuiltin(){
+    const r=curText().recording; if(!r) return;
+    let url=r.src;
+    const emb=document.getElementById("embeddedAudio-"+curText().id)||document.getElementById("embeddedAudio");
+    const id=curText().id; this._emb=this._emb||{};
+    if(emb&&!this._emb[id]){ try{const bin=atob(emb.textContent.trim());const u=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);this._emb[id]=URL.createObjectURL(new Blob([u],{type:r.mime||"audio/mpeg"}));}catch{} }
+    if(this._emb[id]) url=this._emb[id];
+    this.attach(url,r.title,r.key,r.size,false);
+  },
+  attach(url,name,key,size,own){
+    if(this.url&&own!==null) { try{URL.revokeObjectURL(this.url)}catch{} }
+    if(this.el){ this.el.pause(); }
+    this.url=own?url:null;
+    const a=this.el||new Audio(); this.el=a; a.preload="auto"; a.src=url; a.playbackRate=+$("rate").value;
+    a.onerror=()=>toast("This recording couldn't be loaded. Check your connection, or choose the file from your device.",4500);
+    a.onloadedmetadata=()=>{
+      $("tDur").textContent=fmt(a.duration); $("seek").disabled=false;
+      // a server without range support makes the stream unseekable: fetch it whole once, then seek freely
+      const seekable=a.seekable&&a.seekable.length&&a.seekable.end(a.seekable.length-1)>a.duration-1;
+      if(!seekable&&!/^blob:|^data:/.test(a.currentSrc)&&!this._fetching){
+        this._fetching=true; $("fileName").textContent=name+" · preparing…";
+        fetch(a.currentSrc).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(bl=>{
+          const keep=a.currentTime, playing=!a.paused;
+          this._fullUrl=URL.createObjectURL(bl); a.src=this._fullUrl; a.currentTime=keep; if(playing) a.play().catch(()=>{});
+          $("fileName").textContent=name;
+        }).catch(()=>{ $("fileName").textContent=name; }).finally(()=>{ this._fetching=false; });
+      }
+    };
+    a.onplay=()=>{ $("playBtn").textContent="Pause"; keepAwake(true); this.loop(); };
+    a.onpause=()=>{ $("playBtn").textContent="Play"; cancelAnimationFrame(this.raf); };
+    a.onended=()=>{ if(Tap.on) Tap.finish(true); };
+    const rec=this.builtinFor(key,size);
+    S.rec=rec;
+    S.audioKey=rec?rec.key:key; S.audioName=name;
+    S.syncKey="sync-"+S.textId+"-"+hash(S.audioKey+(rec?"|v3":""));
+    const d=Store.get(S.syncKey);
+    const ok=x=>Array.isArray(x)&&x.length===S.lines.length;
+    S.times=d&&ok(d.times)?d.times.slice():(rec&&ok(rec.times)?rec.times.slice():new Array(S.lines.length).fill(null));
+    S.extraCues=rec?rec.reprise:[];
+    S.skip=new Set(rec?rec.notInRecording:[]);
+    $("resetSync").hidden=!(rec&&d);
+    $("builtinBtn").hidden=!hasBuiltinAudio()||!!rec;
+    this.index();
+    LS.set("lastAudio."+S.textId,{key:S.audioKey,name:S.audioName,builtin:!!rec&&!own});
+    $("fileName").textContent=S.audioName; $("fileBtn").textContent=hasBuiltinAudio()?"Use my own file":"Change";
+    ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=false);
+    paintAll(); updateHint(); status();
+  },
+  async restoreForText(){
+    if(S.audioKey&&S.syncKey&&S.syncKey.startsWith("sync-"+S.textId+"-")) return;
+    const last=LS.get("lastAudio."+S.textId,null);
+    const hasRec=hasBuiltinAudio();
+    if(!last||last.builtin){ if(hasRec){ this.loadBuiltin(); return; } this.unload(); return; }
+    const blob=await Audio_.get(last.key);
+    if(blob){ await this.load(new File([blob],last.name,{type:blob.type}),last.key); }
+    else if(hasRec){ this.loadBuiltin(); }
+    else { this.unload(); $("fileName").textContent=`Choose “${last.name}” again to continue`; }
+  },
+  unload(){
+    if(this.el){this.el.pause();this.el.removeAttribute("src");}
+    S.audioKey=null; S.times=[]; S.syncKey=null; this.pts=[]; S.rec=null; S.extraCues=[]; S.skip=new Set();
+    $("builtinBtn").hidden=!hasBuiltinAudio(); $("resetSync").hidden=true;
+    $("fileName").textContent="No recording yet"; $("fileBtn").textContent="Choose recording";
+    ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=true); $("seek").disabled=true;
+    $("tNow").textContent="0:00"; $("tDur").textContent="0:00";
+  },
+  wordsFor(i){
+    const r=S.rec; if(!r||!r.words||!r.words[i]||r.times[i]==null||S.times[i]==null) return null;
+    const d=S.times[i]-r.times[i];   // your timing adjustments move the line's words with it
+    return d?r.words[i].map(w=>w&&[w[0]+d,w[1]+d]):r.words[i];
+  },
+  index(){
+    this.pts=[];
+    S.times.forEach((t,i)=>{ if(t!=null) this.pts.push([t,i,this.wordsFor(i)]); });
+    (S.extraCues||[]).forEach(c=>this.pts.push([c[0],c[1],c[2]||null]));
+    this.pts.sort((a,b)=>a[0]-b[0]);
+  },
+  lineAt(t){
+    const p=this.pts; if(!p.length||t<p[0][0]) return null;
+    let lo=0,hi=p.length-1; while(lo<hi){const m=(lo+hi+1)>>1; if(p[m][0]<=t) lo=m; else hi=m-1;}
+    const nextT=lo+1<p.length?p[lo+1][0]:(this.el.duration||p[lo][0]+6);
+    return {i:p[lo][1],start:p[lo][0],end:nextT,words:p[lo][2]};
+  },
+  loop(){
+    const a=this.el; if(!a) return;
+    const t=a.currentTime;
+    $("tNow").textContent=fmt(t);
+    if(!this.seeking&&a.duration) $("seek").value=Math.round(t/a.duration*1000);
+    const heard=Math.max(0,t-S.lag);
+    if(!Tap.on&&performance.now()>=(this.holdUntil||0)){
+      const hit=this.lineAt(heard);
+      if(hit){
+        if(hit.i!==S.cur) setCur(hit.i);
+        if(hit.words) fillWords(hit.i,heard,hit.words);
+        else fill(hit.i,Math.min(1,(heard-hit.start)/Math.max(0.3,hit.end-hit.start)));
+      }
+    }
+    if(!a.paused) this.raf=requestAnimationFrame(()=>this.loop());
+  },
+  pause(){ if(this.el) this.el.pause(); },
+  mark(i){
+    const t=Math.max(0,this.el.currentTime-S.lag-0.12);
+    S.times[i]=+t.toFixed(2); this.index(); this.save(); setCur(i); paintAll(); toast(`Line ${i+1} now starts at ${fmt(t)}`,1600);
+  },
+  nudge(d){
+    const i=S.cur; if(S.times[i]==null){ toast("This line has no timing yet. Tap it while it plays."); return; }
+    S.times[i]=+Math.max(0,S.times[i]+d).toFixed(2); this.index(); this.save();
+    this.el.currentTime=Math.max(0,S.times[i]-0.5); toast(`Line ${i+1} starts at ${S.times[i].toFixed(2)}s`,1400);
+  },
+  saveT:0,
+  save(){ clearTimeout(this.saveT); if(S.rec) $("resetSync").hidden=false; this.saveT=setTimeout(()=>Store.put(S.syncKey,{textId:S.textId,audio:S.audioName,times:S.times,updated:Date.now()}),800); }
+};
+$("fileBtn").onclick=()=>$("fileIn").click();
+$("builtinBtn").onclick=()=>Music.loadBuiltin();
+$("resetSync").onclick=async()=>{
+  if(!S.rec) return;
+  await Store.del(S.syncKey);
+  S.times=S.rec.times.slice(); Music.index(); $("resetSync").hidden=true; paintAll(); status();
+  toast("Back to the original timing");
+};
+$("fileIn").onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const key=(f.name+"|"+f.size).slice(0,300);
+  await Music.load(f,key);
+  const ok=await Audio_.put(key,f);
+  if(!ok) toast("Loaded. This browser won't keep the file, so you'll choose it again next time. Your timings are saved.",4200);
+  e.target.value="";
+};
+$("playBtn").onclick=()=>{ const a=Music.el; if(!a) return; a.paused?a.play().catch(()=>toast("Couldn't play this file. Try an MP3 or M4A.")):a.pause(); };
+$("rate").onchange=e=>{ if(Music.el) Music.el.playbackRate=+e.target.value; };
+$("seek").addEventListener("input",e=>{ Music.seeking=true; const a=Music.el; if(a&&a.duration){ a.currentTime=e.target.value/1000*a.duration; $("tNow").textContent=fmt(a.currentTime); if(a.paused) Music.loop(); } });
+$("seek").addEventListener("change",()=>{ Music.seeking=false; });
+$("adjustBtn").onclick=()=>{
+  Music.adjusting=!Music.adjusting;
+  $("adjustBtn").setAttribute("aria-pressed",Music.adjusting); $("adjustBtn").classList.toggle("on",Music.adjusting);
+  $("adjustRow").hidden=!Music.adjusting;
+  $("adjustBtn").textContent=Music.adjusting?"Done adjusting":"Adjust timing";
+};
+$("nudgeMinus").onclick=()=>Music.nudge(-0.25);
+/* speaker-delay calibration: tap on each line start you hear; the median offset becomes the delay */
+const Cal={on:false,taps:[],
+  start(){
+    if(!Music.el||!Music.pts.length){ toast("Load a synced recording first, then calibrate."); return; }
+    $("setSheet").hidden=true; this.on=true; this.taps=[];
+    setMore(false); $("calRow").hidden=false; $("playRow").hidden=true;
+    $("calTap").textContent="Tap when you hear a new line begin (0 of 6)";
+    Music.el.play().catch(()=>{});
+  },
+  tap(){
+    const tp=Music.el.currentTime-0.08;           // typical tap reaction on a steady chant
+    // the line start this tap belongs to: the latest one at most 0.3 s after the tap
+    let best=null; for(const p of Music.pts){ if(p[0]<=tp+0.3) best=p[0]; else break; }
+    if(best==null||tp-best>2.5) return;
+    this.taps.push(Math.max(0,tp-best));
+    $("calTap").textContent=`Tap when you hear a new line begin (${this.taps.length} of 6)`;
+    if(this.taps.length>=6) this.finish(true);
+  },
+  finish(ok){
+    this.on=false; $("calRow").hidden=true; $("playRow").hidden=false;
+    if(ok){
+      const s=this.taps.slice().sort((a,b)=>a-b); const med=(s[2]+s[3])/2;
+      S.lag=Math.round(Math.min(3,med)*20)/20; LS.set("lag2",S.lag); applySettings();
+      toast(`Highlight delay set to ${S.lag.toFixed(2)} s`);
+    }
+  }
+};
+$("calBtn").onclick=()=>Cal.start();
+$("calTap").onclick=()=>Cal.tap();
+$("calCancel").onclick=()=>Cal.finish(false);
+$("lagZero").onclick=()=>{ S.lag=0; LS.set("lag2",0); applySettings(); toast("Highlight delay reset to 0"); };
+$("nudgePlus").onclick=()=>Music.nudge(0.25);
+
+/* Tap along: one tap marks the start of the highlighted line */
+const Tap = {
+  on:false, hist:[],
+  start(){
+    const a=Music.el; if(!a) return;
+    this.on=true; this.hist=[];
+    // resume from the highlighted line if it already has a time, else from the start
+    let from=S.cur;
+    if(S.times[from]!=null) a.currentTime=Math.max(0,S.times[from]-1.5);
+    else if(!S.times.slice(0,from).some(t=>t!=null)){ from=0; a.currentTime=0; }
+    setCur(from);
+    S.els[S.cur].classList.add("target");
+    setMore(false); $("tapRow").hidden=false; $("playRow").hidden=true;
+    a.play().catch(()=>{});
+    status();
+  },
+  tap(){
+    if(!this.on) return;
+    const a=Music.el, i=S.cur;
+    this.hist.push([i,S.times[i]]);
+    S.times[i]=+Math.max(0,a.currentTime-S.lag-0.15).toFixed(2);
+    S.els[i].classList.remove("target");
+    if(i<S.lines.length-1){ setCur(i+1); S.els[S.cur].classList.add("target"); }
+    else { this.finish(true); }
+    fill(i,1);
+  },
+  undo(){
+    const h=this.hist.pop(); if(!h) return;
+    S.els[S.cur].classList.remove("target");
+    S.times[h[0]]=h[1]; setCur(h[0]); S.els[S.cur].classList.add("target");
+    if(h[1]==null&&Music.el){ const prevT=S.times.slice(0,h[0]).filter(t=>t!=null).pop(); Music.el.currentTime=Math.max(0,(prevT??0)); }
+  },
+  finish(save){
+    if(!this.on) return;
+    this.on=false; S.els.forEach(el=>el.classList.remove("target"));
+    $("tapRow").hidden=true; $("playRow").hidden=false; $("adjustRow").hidden=!Music.adjusting;
+    if(Music.el) Music.el.pause();
+    if(save){ Music.index(); Music.save(); toast("Timings saved. Press Play to follow along."); }
+    paintAll(); updateHint(); status();
+  }
+};
+$("tapAlongBtn").onclick=()=>Tap.start();
+$("tapBtn").onclick=()=>Tap.tap();
+$("tapDone").onclick=()=>Tap.finish(true);
+$("tapUndo").onclick=()=>Tap.undo();
+
+/* keyboard */
+addEventListener("keydown",e=>{
+  if(e.target.closest("input,textarea,select")) return;
+  if(!$("libSheet").hidden||!$("setSheet").hidden||!$("guideSheet").hidden){ if(e.key==="Escape"){ $("libSheet").hidden=true; $("setSheet").hidden=true; $("guideSheet").hidden=true; } return; }
+  if(e.key===" "){
+    e.preventDefault();
+    if(S.mode==="recite") step(1);
+    else if(Cal.on) Cal.tap();
+    else if(Tap.on) Tap.tap();
+    else $("playBtn").click();
+  }else if(e.key==="ArrowRight"&&S.mode==="recite") step(1);
+  else if(e.key==="ArrowLeft"&&S.mode==="recite") step(-1);
+});
+
+/* ---------- library ---------- */
+function openLib(){ drawLib(); $("libSheet").hidden=false; }
+function drawLib(){
+  const list=$("libList"); list.textContent="";
+  allTexts().forEach(t=>{
+    const row=document.createElement("div"); row.className="lib-item"+(t.id===S.textId?" sel":"");
+    const b=document.createElement("button"); b.className="open";
+    const nLines=t.sections.reduce((n,s)=>n+s.verses.reduce((m,v)=>m+(isVerse(v)?v.length:0),0),0);
+    b.innerHTML=`<span class="t"></span><span class="s"></span>`;
+    b.querySelector(".t").textContent=t.title;
+    b.querySelector(".s").textContent=`${t.sub||""}${t.sub?" · ":""}${nLines} lines`;
+    b.onclick=()=>{ selectText(t.id); $("libSheet").hidden=true; };
+    row.appendChild(b);
+    if(!t.builtin){
+      const d=document.createElement("button"); d.className="del"; d.textContent="Remove";
+      d.onclick=async()=>{
+        if(!d.classList.contains("arm")){ d.classList.add("arm"); d.textContent="Tap again to remove"; setTimeout(()=>{d.classList.remove("arm");d.textContent="Remove"},3000); return; }
+        await Store.del(t.id);
+        for(const s of Store.all("sync-"+t.id+"-")) await Store.del(s.key);
+        if(S.textId===t.id) selectText(BUILTIN[0].id);
+        drawLib(); toast("Removed from your library");
+      };
+      row.appendChild(d);
+    }
+    list.appendChild(row);
+  });
+}
+function selectText(id){
+  Voice.stop(); Tap.finish(false); Music.pause();
+  S.textId=id; LS.set("textId",id);
+  S.audioKey=null; S.syncKey=null; S.rec=null; S.extraCues=[]; S.skip=new Set();
+  render();
+  if(S.mode==="music") Music.restoreForText();
+}
+function parseText(raw){
+  const sections=[]; let sec=null, verse=[];
+  const flush=()=>{ if(verse.length){ if(!sec){sec={title:"",verses:[]};sections.push(sec);} sec.verses.push(verse); verse=[]; } };
+  raw.replace(/\r/g,"").split("\n").forEach(l=>{
+    const line=l.trim();
+    if(!line){ flush(); return; }
+    const h=line.match(/^#+\s*(.+)$/)||line.match(/^॥\s*([^॥०-९0-9]{1,40}?)\s*॥$/);
+    if(h&&!/इति/.test(line)){ flush(); sec={title:h[1].trim(),verses:[]}; sections.push(sec); return; }
+    verse.push(line);
+  });
+  flush();
+  return sections.filter(s=>s.verses.length);
+}
+$("addBtn").onclick=async()=>{
+  const title=$("newTitle").value.trim(), body=$("newBody").value;
+  const sections=parseText(body);
+  if(!title){ $("addMsg").textContent="Give the text a title first."; $("newTitle").focus(); return; }
+  if(!sections.length){ $("addMsg").textContent="Paste the text into the box first."; $("newBody").focus(); return; }
+  const id="text-"+Date.now().toString(36);
+  await Store.put(id,{title,sub:"Added by you",sections,created:Date.now()});
+  $("newTitle").value=""; $("newBody").value=""; $("addMsg").textContent="";
+  $("libSheet").hidden=true; selectText(id);
+  toast(`Added “${title}”`);
+};
+$("libBtn").onclick=openLib;
+$("libClose").onclick=()=>$("libSheet").hidden=true;
+$("libSheet").addEventListener("click",e=>{ if(e.target.id==="libSheet") e.target.hidden=true; });
+
+/* ---------- settings ---------- */
+function applySettings(){
+  document.documentElement.style.setProperty("--scale",S.scale);
+  $("sScale").value=S.scale; $("sPause").value=S.pause; $("sSens").value=S.sens;
+  $("sPauseV").textContent=S.pause.toFixed(2)+"s"; $("sLag").value=S.lag; $("sLagV").textContent=S.lag.toFixed(2)+"s"; $("sSensV").textContent=S.sens.toFixed(1)+"×";
+  $("sBreaks").textContent=S.breaks?"On":"Off"; $("sBreaks").setAttribute("aria-pressed",S.breaks); $("sBreaks").classList.toggle("on",S.breaks);
+}
+$("setBtn").onclick=()=>{ applySettings(); $("setSheet").hidden=false; };
+$("setClose").onclick=()=>$("setSheet").hidden=true;
+$("setSheet").addEventListener("click",e=>{ if(e.target.id==="setSheet") e.target.hidden=true; });
+$("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); };
+$("sPause").oninput=e=>{ S.pause=+e.target.value; LS.set("pause3",S.pause); applySettings(); };
+$("sLag").oninput=e=>{ S.lag=+e.target.value; LS.set("lag2",S.lag); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
+$("sSens").oninput=e=>{ S.sens=+e.target.value; LS.set("sens",S.sens); applySettings(); };
+$("sBreaks").onclick=()=>{ S.breaks=!S.breaks; LS.set("breaks",S.breaks); applySettings(); const c=S.cur; render(); setCur(c,{scroll:"instant"}); };
+
+/* ---------- welcome, guide, more ---------- */
+function showWelcome(on){ $("welcome").hidden=!on; if(on){ SC.scrollTo({top:0}); } }
+$("wBegin").onclick=()=>{ LS.set("welcomed",true); showWelcome(false); S.pauseUntil=0; follow(true,true); };
+$("wGuide").onclick=()=>{ $("guideSheet").hidden=false; };
+$("helpBtn").onclick=()=>{ $("guideSheet").hidden=false; };
+$("guideClose").onclick=()=>$("guideSheet").hidden=true;
+$("guideSheet").addEventListener("click",e=>{ if(e.target.id==="guideSheet") e.target.hidden=true; });
+$("guideWelcome").onclick=()=>{ $("guideSheet").hidden=true; showWelcome(true); };
+function setMore(open){ const was=!$("morePanel").hidden; $("morePanel").hidden=!open; $("moreBtn").setAttribute("aria-expanded",open); $("moreBtn").textContent=open?"Close":"More"; if(was!==open) requestAnimationFrame(function(){ follow(true); }); }
+$("moreBtn").onclick=()=>setMore($("morePanel").hidden);
+$("playBtn").addEventListener("click",()=>setMore(false));
+$("micBtn").addEventListener("click",()=>setMore(false));
+$("text").addEventListener("click",()=>setMore(false));
+
+/* ---------- keep-screen-on switch (after Awake exists) ---------- */
+function paintAwake(){ $("awakeBtn").setAttribute("aria-checked",Awake.want); }
+$("awakeBtn").onclick=()=>{
+  Awake.want=!Awake.want; LS.set("awake",Awake.want); paintAwake();
+  if(Awake.want){ Awake.on(); toast("The screen will stay on while the app is open",1800); }
+  else { Awake.off(); toast("Screen will turn off as usual",1600); }
+};
+paintAwake();
+
+/* ---------- boot ---------- */
+applySettings();
+render();
+setMode(S.mode);
+if(!LS.get("welcomed",false)) showWelcome(true);
+document.querySelectorAll("[data-js]").forEach(function(el){ el.hidden=false; });
+Awake.on();
+$("nojs").hidden=true;
+if(!Voice.supported){ $("micBtn").textContent="Next line"; }
+Store.connect().then(ok=>{
+  if(!ok) return;
+  if(!allTexts().some(t=>t.id===S.textId)){ S.textId=BUILTIN[0].id; }
+  const c=S.cur; render(); setCur(c,{scroll:"instant"});
+  if(S.mode==="music") Music.restoreForText();
+});
+</script>

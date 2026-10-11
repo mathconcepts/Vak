@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "vak-studio": {
+      "type": "local",
+      "command": ["/ABSOLUTE/PATH/TO/vak-studio/.venv/bin/python", "-m", "vakstudio.mcp_server"],
+      "environment": { "VAK_HOME": "/ABSOLUTE/PATH/TO/vak-studio", "PYTHONPATH": "/ABSOLUTE/PATH/TO/vak-studio", "VAK_DIALOG": "1" },
+      "enabled": true
+    }
+  }
+}

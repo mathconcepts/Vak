@@ -1,0 +1,26 @@
+{
+  "id": "sandhyavandanam-ky",
+  "title": "सन्ध्यावन्दनम्",
+  "sub": "Krishna Yajurveda · Sandhyavandanam",
+  "source": "",
+  "licence": "private",
+  "version": 0,
+  "created": "2026-10-11T07:54:44+00:00",
+  "order": null,
+  "anchors": {},
+  "judge": {
+    "n": 30,
+    "seed": 1,
+    "bar": 0.65
+  },
+  "notes": [
+    {
+      "at": "2026-10-11T07:54:44+00:00",
+      "note": "Pack #2 (decided 2026-10-11). Krishna Yajurveda (Taittiriya) Sandhyavandanam. Text and recording to be provided by Giri. Do not source or 'fix' text from elsewhere. Expect the recording to include spoken instructions and repeated mantras (e.g. Gayatri japa count): record what is chanted in 'order' once the recording is in."
+    }
+  ],
+  "gates": {},
+  "recording": null,
+  "updated": "2026-10-11T08:07:31+00:00",
+  "bite": "Press play. Follow the light. Offer the sandhya."
+}

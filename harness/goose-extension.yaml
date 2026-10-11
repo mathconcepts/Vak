@@ -1,0 +1,12 @@
+# Goose (block/goose): add under `extensions:` in ~/.config/goose/config.yaml, then pick any provider:
+#   goose configure  →  Anthropic | OpenAI | Google Gemini | Ollama (local Llama/Qwen) | OpenRouter | Groq …
+vak-studio:
+  type: stdio
+  enabled: true
+  cmd: /ABSOLUTE/PATH/TO/vak-studio/.venv/bin/python
+  args: ["-m", "vakstudio.mcp_server"]
+  envs:
+    VAK_HOME: /ABSOLUTE/PATH/TO/vak-studio
+    PYTHONPATH: /ABSOLUTE/PATH/TO/vak-studio
+    VAK_DIALOG: "1"
+  timeout: 3600

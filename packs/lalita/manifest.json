@@ -1,0 +1,98 @@
+{
+  "id": "lalita",
+  "title": "श्रीललितासहस्रनामस्तोत्रम्",
+  "sub": "Lalita Sahasranama · Brahmanda Purana",
+  "source": "Text: <a href=\"https://sanskritdocuments.org/doc_devii/lalita.html\" target=\"_blank\" rel=\"noopener\">sanskritdocuments.org</a>, proofread edition. Variant readings omitted.",
+  "licence": "private",
+  "version": 2,
+  "created": "2026-10-11T07:36:32+00:00",
+  "order": "0-3,9-12,25-389,9-12",
+  "anchors": {},
+  "judge": {
+    "n": 30,
+    "seed": 1,
+    "bar": 0.65
+  },
+  "notes": [
+    {
+      "at": "2026-10-11",
+      "note": "Ashram recording does not chant nyasa lines 4–8 or the purvapithika (13–24); the first dhyana shloka (9–12) is repeated at the end. Recording is PRIVATE: never host publicly (ask ashram first)."
+    }
+  ],
+  "gates": {
+    "text": {
+      "ok": true,
+      "at": "2026-10-11T08:07:58+00:00",
+      "problems": 0,
+      "stats": {
+        "sections": 3,
+        "lines": 393,
+        "notes": 0,
+        "numbered_verses": 182
+      },
+      "hash": "e31c52203619b0c0"
+    },
+    "align": {
+      "ok": true,
+      "low_lines": [
+        0,
+        1,
+        37,
+        117,
+        127,
+        133,
+        145,
+        177,
+        178,
+        334,
+        358
+      ],
+      "low_frac": 0.029,
+      "median_conf": 0.702,
+      "at": "2026-10-11T08:08:08+00:00",
+      "lines": 373,
+      "not_in_recording": 20,
+      "region": [
+        21.46,
+        1788.46
+      ]
+    },
+    "judge": {
+      "ok": true,
+      "rate": 0.8,
+      "bar": 0.65,
+      "failed_lines": [
+        2,
+        66,
+        70,
+        180,
+        217,
+        248
+      ],
+      "at": "2026-10-11T08:12:37+00:00",
+      "passed": 24,
+      "total": 30,
+      "seed": 1
+    }
+  },
+  "recording": {
+    "file": "original.mp3",
+    "original_name": "lalita.mp3",
+    "label": "Ashram recording",
+    "title": "Bhaskara Prakasha Ashram recitation",
+    "bytes": 14486256,
+    "duration": 1810.78,
+    "sha256": "3d3d0f04c7747914d96de6719a91476e19fe527b48e201da62be0b500db10a76",
+    "mime": "audio/mpeg"
+  },
+  "updated": "2026-10-11T08:12:37+00:00",
+  "bite": "Press play. Follow the light. Chant with the Devi.",
+  "bite_end": "Every word, in step with the Devi.",
+  "legacy_key": "Lalitha_Sahasranamam_Stotram_-_Full_Recitation_-_BHASKARA_PRAKASHA_ASHRAM_1.mp3|14486256",
+  "build": {
+    "version": 2,
+    "at": "2026-10-11T08:12:37+00:00",
+    "hash": "640e726817e513fc",
+    "timed": true
+  }
+}

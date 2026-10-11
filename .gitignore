@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+reader/node_modules/
+packs/*/audio/
+packs/*/work/emissions.npy
+packs/*/work/*.png
+dist/
+runs/
