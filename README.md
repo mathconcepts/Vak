@@ -1,124 +1,92 @@
 # Vāk (वाक्)
 
-*A quiet helper for chanting: the words light up as they are sung.*
+**A prayer book that follows along. Each word lights up as it is chanted, so you never lose your place.**
 
 ---
 
-It is a little before six in the morning in Chennai. Amma sits in front of the small altar with a printed copy of the श्रीललितासहस्रनाम, the pages soft from years of use. A recording plays from the phone. Halfway through, she turns a page, looks up at the lamp, and when she looks down the voice has moved on. Which line is it now? She finds the place, loses it again.
+## The problem
 
-In Bangalore, her son knows this. He would like her morning to be a little easier, without teaching anyone a new gadget.
+Amma chants the श्रीललितासहस्रनाम every morning with a recording. She turns a page, looks up at the lamp, and when she looks back the voice has moved on. Where are we now?
 
-That is the whole reason Vāk exists.
+## The idea
 
-## What Vāk is
+Put the prayer on a screen and let it keep the place for her:
 
-**Vāk is a prayer book that follows along: it lights up each word as it is sung, so you never lose your place.**
+- The word being sung turns **gold**.
+- The page **scrolls by itself**.
+- The screen **stays awake** until the prayer ends.
 
-It has two parts.
+## Two parts
 
-| Part | Who it is for | What it is |
+| | What it is | Who it is for |
 |---|---|---|
-| **Vāk Puja Reader** | Families who chant | A single file that opens in a browser, on a phone, tablet or laptop |
-| **Vāk Studio** | Whoever prepares prayers | A tool on your own computer that makes new prayer packs |
+| **Vāk Reader** | One HTML file. Opens on any phone, tablet or laptop. Works offline. | Families who chant |
+| **Vāk Studio** | A tool on your computer that turns a prayer text and a recording into a Reader file | Whoever prepares the prayers |
 
-### Vāk Puja Reader
+## How the Reader works
 
-**When** you are chanting along to a recording, **you can** watch each word fill with gold as it is sung, **so that** your eyes stay on the text and your mind stays on the prayer.
+- **Music mode:** press Play. Each word fills with gold as it is sung.
+- **Recite mode:** press Listen and chant yourself. The page moves line by line at your pace. It follows your voice, not your words.
+- **Small helps:**
+  - Tap any line to jump there.
+  - Slow the recording down.
+  - Make the text bigger.
+  - Fix the timing if a Bluetooth speaker runs late.
 
-**When** you chant by yourself, with no recording, **you can** press *Listen*, and the Reader follows the loudness of your voice and moves from line to line at your own pace, **so that** the page keeps up with you. It does not understand the words. It learns your pace.
+No app to install, no sign-in, no ads, no tracking.
 
-### Vāk Studio
+**Try it now:** open [`samples/lalita-text-only.html`](samples/lalita-text-only.html) in a browser. It holds the text only. Choose your own recording inside it.
 
-**When** you want a new prayer in the Reader, **you can** give Studio the text and a recording, and it finds where every word begins, checks its own work, and builds a prayer pack, **so that** you do not have to time hundreds of words by hand.
+## How Studio makes a Reader file
 
-## Try it in one minute
+Think of three people in a music class:
 
-1. Open `samples/lalita-text-only.html` in any browser.
-2. You will see the Lalitā Sahasranāma in large Devanagari.
-3. This sample is **text only**. There is no recording inside it. Pick your own recording of the prayer, and the Reader will let you tap along to set the timings for it.
+1. **A teacher listens** and marks where every word begins. *(The aligner: a speech model that knows about 1,100 languages.)*
+2. **A second teacher checks** a few random spots by ear. *(The listening check.)*
+3. **An elder signs off.** Only a person can say yes. The computer cannot. *(Approval.)*
 
-No install, no sign-in. It works offline.
+Then Studio builds the Reader file.
 
-## How it works, explained to a 10-year-old
-
-Imagine you have a song recording and want to know exactly when each word starts.
-
-1. **A music teacher listens carefully.** She has heard thousands of recordings of speech and singing, in many languages. She listens to your recording and writes a small tick mark where each word begins. In Vāk this is the **aligner**.
-2. **A second teacher checks a few spots.** She does not redo the work. She picks some places at random, plays just a short clip, and asks: does this sound like the start of this line, or the end of the one before? In Vāk this is the **listening check**. It is a smoke alarm, not proof.
-3. **An elder signs it off.** Only a person can say "yes, this is right". The computer is not allowed to say it. In Vāk this is **approval**.
-
-Only after all three does a prayer reach the family. More detail is in [docs/HOW-IT-WORKS.md](docs/HOW-IT-WORKS.md).
+**Is it accurate?** On Lalitā, Studio found the same timings that had been checked by ear, all 970 words, with no hints given.
 
 ## Made with respect
 
-- **Private recordings are never published.** The pilot recording used with the family stays within the family. The repository holds timings, not audio. Permission from the ashram is being requested.
-- **The AI never edits sacred text.** Studio does not invent, fix or "correct" a single syllable.
-- **A person approves every shared file.** The AI cannot give approval. A new build needs a new approval.
-- **No ads, no tracking, no accounts.**
+- **Recordings stay private.** Files that contain a recording are shared by hand with family only. No recording is stored in this repository.
+- **The AI never changes the sacred text.** The text comes from a person.
+- **A person approves every file** before it is shared.
 
-## Status
+## What is ready
 
-| Feature | Status |
+| Ready today | Coming later |
 |---|---|
-| Reader: Music mode with word-by-word fill | Built and tested |
-| Reader: Recite mode (follows your voice level) | Built and tested |
-| Reader: tap to jump, speed, adjust timing, tap-along, calibration, screen kept awake | Built and tested |
-| Reader: works on older iPads (Safari 11+) | Built and tested |
-| Studio: alignment, listening check, gates, approval, build | Built and tested |
-| Pack: Śrī Lalitā Sahasranāma (v2) | Built, all checks pass |
-| Pack: Sandhyavandanam (Krishna Yajurveda), सन्ध्यावन्दनम् | Created, awaiting text and recording |
-| Together mode (family in different cities follow one leader) | **Planned** |
-| Sankalpa count (family total of parayanams) | **Planned** |
-| Big-screen mode with QR join | **Planned** |
-| Other scripts (Telugu, Kannada, Tamil and more) | **Planned** |
-| Learning mode, installable web app | **Planned** |
-| Recite mode that follows your voice word by word | **Planned** |
+| Reader: Music and Recite modes, word-by-word gold, auto-scroll, works offline and on older iPads | **Together mode:** family in different cities follow one leader on the same word |
+| Studio: text check, timing, listening check, approval, build | **Sankalpa count:** a family total of parayanams, with no server |
+| **Lalitā Sahasranāma** pack, all checks passed | **Other scripts:** Telugu, Kannada, Tamil |
+| **Krishna Yajurveda Sandhyavandanam** pack, waiting for its text and recording | **YouTube playback**, for videos whose owners allow embedding |
 
-## Quick start for developers
+## For developers
 
-```
+```bash
 git clone https://github.com/mathconcepts/vak.git && cd vak && ./setup.sh
+.venv/bin/python harness/install_claude_desktop.py   # use Studio from Claude Desktop
 ```
 
-This needs Python 3.10 or newer. It downloads about 1.7 GB of models once and runs the tests. Then connect Claude Desktop:
+- `setup.sh` needs Python 3.10 or newer. It downloads about 1.7 GB of models once and runs the tests.
+- Studio also works with Goose or OpenCode, and with any model: Claude, GPT, Gemini, or local Llama or Qwen. The heavy work is local code, so every model gets the same result.
 
-```
-.venv/bin/python harness/install_claude_desktop.py
-```
-
-Reopen Claude Desktop and ask: "List my Vāk packs".
-
-## Repository map
-
-| Path | What is in it |
+| Read more | |
 |---|---|
-| `reader/template.html` | The Reader app |
-| `vakstudio/` | Python: textfmt, audio, align, judge, htmlbuild, workspace, api, cli, mcp_server |
-| `packs/<id>/` | One folder per prayer pack |
-| `harness/` | Claude Desktop installer, Goose and OpenCode configs |
-| `tests/` | Automated tests |
-| `samples/lalita-text-only.html` | Try the Reader now, text only |
-| `AGENTS.md` | Rules for any AI agent working here |
-| `setup.sh` | One-step setup |
-
-## Read more
-
-- [docs/USE-CASES.md](docs/USE-CASES.md): who uses Vāk, and how
-- [docs/HOW-IT-WORKS.md](docs/HOW-IT-WORKS.md): the pipeline, for children and engineers
-- [docs/STUDIO.md](docs/STUDIO.md): preparing a prayer pack
-- [docs/HARNESS.md](docs/HARNESS.md): the tools, checks, memory and guardrails around the AI
-- [AGENTS.md](AGENTS.md): rules for AI agents
-- [docs/sankalpa.md](docs/sankalpa.md): design for the planned family count
-- [docs/plans/2026-10-11-vak-platform.md](docs/plans/2026-10-11-vak-platform.md): the platform plan
+| [docs/USE-CASES.md](docs/USE-CASES.md) | Real-life stories: Chennai, Hyderabad, Bangalore, Pune, Delhi |
+| [docs/HOW-IT-WORKS.md](docs/HOW-IT-WORKS.md) | The pipeline, in simple and technical terms |
+| [docs/STUDIO.md](docs/STUDIO.md) · [CONTRIBUTING.md](CONTRIBUTING.md) | Add a new prayer |
+| [docs/HARNESS.md](docs/HARNESS.md) · [AGENTS.md](AGENTS.md) | How the AI is kept safe and checked |
 
 ## Thanks
 
-With gratitude to **Bhaskara Prakasha Ashram**, whose recording was used in the family pilot, and to **sanskritdocuments.org**, whose proofread edition provides the Lalitā Sahasranāma text. This is attribution, not endorsement: neither has reviewed or endorsed this project.
+To the reciters and the **Bhaskara Prakasha Ashram** for the recitation, and to **sanskritdocuments.org** for the proofread text. This credits them; it does not claim they endorse the project.
 
 ---
 
 **Created by MSP Giri · Inspired by Navarathri 2026 · With Jagadamba's blessings, more will follow.**
-
-Vāk began late one night, because a daily puja deserved a page that keeps its place. It was refined while the first two users, Giri's parents, were chanting with it.
 
 श्रीमात्रे नमः
