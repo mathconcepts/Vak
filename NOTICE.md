@@ -14,7 +14,7 @@ Prayer texts belong to their tradition. They are not claimed as the work of this
 
 Recordings are not included in this repository. They remain with their owners.
 
-The Bhaskara Prakasha Ashram recording of the Lalitā Sahasranāma is used privately, within the family only. Permission from the ashram is being requested. The recording is not published.
+The Lalitā Sahasranāma pack is timed to the recitation by Akhila Ranganathan and Bhanumathy Viswanath (album "Lalitha Sahasranama Parayanakrama"; the same recitation the Bhaskara Prakasha Ashram shares on its YouTube channel). The recording is used within the family only (licence: family) and is not published here.
 
 ## Timing data
 
