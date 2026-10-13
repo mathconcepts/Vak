@@ -3,7 +3,7 @@
   "title": "श्रीललितासहस्रनामस्तोत्रम्",
   "sub": "Lalita Sahasranama · Brahmanda Purana",
   "source": "Text: <a href=\"https://sanskritdocuments.org/doc_devii/lalita.html\" target=\"_blank\" rel=\"noopener\">sanskritdocuments.org</a>, proofread edition. Variant readings omitted.",
-  "licence": "family",
+  "licence": "public",
   "version": 3,
   "created": "2026-10-11T07:36:32+00:00",
   "order": "0-3,9-12,25-389,9-12",
@@ -21,6 +21,10 @@
     {
       "at": "2026-10-11",
       "note": "Recording replaced by the album copy (Akhila Ranganathan & Bhanumathy Viswanath, 'Lalitha Sahasranama Parayanakrama', track 1). Same recitation as the Ashram MP3/YouTube upload: identical length, 38 ms earlier start. Approved by Giri for the local (family) version."
+    },
+    {
+      "at": "2026-10-13",
+      "note": "Giri chose to publish the album recording on the public site (mathconcepts.github.io/Vak) so it plays without choosing a file; he confirmed he has permission to publish it on the web."
     }
   ],
   "gates": {
