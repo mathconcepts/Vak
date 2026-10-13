@@ -156,3 +156,16 @@ def test_built_file_parses_on_old_ipads(ws):
     code = "const a=require(%r);a.parse(require('fs').readFileSync(%r,'utf8'),{ecmaVersion:2017,sourceType:'script'});console.log('ok')" % (acorn, f)
     out = subprocess.run([node, "-e", code], capture_output=True, text=True)
     assert out.stdout.strip() == "ok", out.stderr[-400:]
+
+
+def test_site_build_is_installable_and_offline_ready(ws, tmp_path):
+    api, d = ws
+    api.pack_new("p6", "t"); api.text_import("p6", text=SAMPLE); api.pack_build("p6")
+    from vakstudio import site
+    p = json.load(open(os.path.join(d, "packs", "p6", "pack.json"), encoding="utf-8"))
+    out = tmp_path / "site"
+    r = site.build([p], str(out))
+    names = set(os.listdir(out))
+    assert {"index.html", "sw.js", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", ".nojekyll"} <= names
+    html = (out / "index.html").read_text(encoding="utf-8")
+    assert 'rel="manifest"' in html and 'serviceWorker' in html and r["audio"] == []
