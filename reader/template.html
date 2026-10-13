@@ -811,6 +811,7 @@ const Music = {
     a.onerror=()=>toast("This recording couldn't be loaded. Check your connection, or choose the file from your device.",4500);
     a.onloadedmetadata=()=>{
       $("tDur").textContent=fmt(a.duration); $("seek").disabled=false;
+      if(own){ const r=this.durationMatch(a.duration); if(r){ this.bind(r,key,name,own); toast("Recognised this recording: the words will light up as it plays.",3500); } }
       // a server without range support makes the stream unseekable: fetch it whole once, then seek freely
       const seekable=a.seekable&&a.seekable.length&&a.seekable.end(a.seekable.length-1)>a.duration-1;
       if(!seekable&&!/^blob:|^data:/.test(a.currentSrc)&&!this._fetching){
@@ -825,7 +826,15 @@ const Music = {
     a.onplay=()=>{ $("playBtn").textContent="Pause"; keepAwake(true); this.loop(); };
     a.onpause=()=>{ $("playBtn").textContent="Play"; cancelAnimationFrame(this.raf); };
     a.onended=()=>{ if(Tap.on) Tap.finish(true); };
-    const rec=this.builtinFor(key,size);
+    this.bind(this.builtinFor(key,size),key,name,own);
+  },
+  /* Your own copy of the pack's recording often differs in name or size (re-tagged, copied, re-downloaded).
+     When its length matches the pack's recording to within a second, it is the same recitation: use the timings. */
+  durationMatch(d){
+    const r=curText().recording;
+    return r&&r.duration&&!S.rec&&isFinite(d)&&Math.abs(d-r.duration)<1.5?r:null;
+  },
+  bind(rec,key,name,own){
     S.rec=rec;
     S.audioKey=rec?rec.key:key; S.audioName=name;
     S.syncKey="sync-"+S.textId+"-"+hash(S.audioKey+(rec?"|v3":""));
@@ -837,7 +846,7 @@ const Music = {
     $("resetSync").hidden=!(rec&&d);
     $("builtinBtn").hidden=!hasBuiltinAudio()||!!rec;
     this.index();
-    LS.set("lastAudio."+S.textId,{key:S.audioKey,name:S.audioName,builtin:!!rec&&!own});
+    LS.set("lastAudio."+S.textId,{key:own?key:S.audioKey,name:S.audioName,builtin:!!rec&&!own});   // own files are kept under their own key
     $("fileName").textContent=S.audioName; $("fileBtn").textContent=hasBuiltinAudio()?"Use my own file":"Change";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=false);
     paintAll(); updateHint(); status();

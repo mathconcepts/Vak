@@ -225,7 +225,7 @@ def _pack_json(pack_id, m):
     if r and os.path.exists(tp):
         t = json.load(open(tp))
         p["recording"] = {"label": r["label"], "title": r["title"], "src": "", "mime": r["mime"],
-                          "key": f"{r['original_name']}|{r['bytes']}", "size": r["bytes"],
+                          "key": f"{r['original_name']}|{r['bytes']}", "size": r["bytes"], "duration": r.get("duration"),
                           "times": t["times"], "words": t["words"], "reprise": t["reprise"],
                           "notInRecording": t["notInRecording"]}
         if m.get("legacy_key"):
