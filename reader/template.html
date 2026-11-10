@@ -14,6 +14,7 @@
   --sindoor:#e0532f;   /* accent */
   --haldi:#f2b440;     /* lit text */
   --haldi-soft:rgba(242,180,64,.12);
+  --rng:rgba(242,180,64,.2);
   --ok:#7fb36a;
   --f-text:"Tiro Devanagari Sanskrit","Noto Serif Devanagari","Sanskrit Text","Mangal",serif;
   --f-ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
@@ -27,13 +28,13 @@
   :root:not([data-theme="dark"]){
     --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
     --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
-    --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
+    --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--ok:#3f7a2e;color-scheme:light;
   }
 }
 :root[data-theme="light"]{
   --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
   --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
-  --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
+  --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--ok:#3f7a2e;color-scheme:light;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -87,10 +88,10 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .ln{position:relative;isolation:isolate}
 .ln.cur{z-index:2}
 .vedic-on .ln{line-height:2.25;transform-origin:0 50%;transition:color .25s,background .25s,opacity .4s,transform .4s cubic-bezier(.2,.8,.2,1)}
-.vedic-on .ln.cur{transform:scale(1.045)}
-@media (max-width:600px){.vedic-on .ln.cur{transform:scale(1.015)}}
-.vedic-on.playing .ln:not(.cur){opacity:.5}
-.vedic-on.playing .ln.cur{box-shadow:0 8px 28px rgba(0,0,0,.10)}
+.focus-on.vedic-on .ln.cur{transform:scale(1.045)}
+@media (max-width:600px){.focus-on.vedic-on .ln.cur{transform:scale(1.015)}}
+.focus-on.vedic-on.playing .ln:not(.cur){opacity:.5}
+.focus-on.vedic-on.playing .ln.cur{box-shadow:0 8px 28px rgba(0,0,0,.10)}
 .scroller{overflow-x:hidden}
 /* a soft tint behind the whole syllable, plus a shape: line under = low, line over = rising, double = long */
 .sw{position:absolute;pointer-events:none;z-index:-1;border-radius:.3em;box-sizing:border-box;transition:background-color .2s,box-shadow .2s}
@@ -104,38 +105,49 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .sw.hot.sv,.sw.hot.dsv{background:var(--sv-hot);box-shadow:0 0 0 2px var(--sv)}
 .no-swara .sw{display:none}
 /* the lens: the word being sung, magnified above the line; the syllable being sung grows */
-.lens{position:absolute;z-index:6;left:0;top:0;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;
-  box-shadow:0 12px 32px rgba(0,0,0,.22);padding:.1em .7em .45em;text-align:center;white-space:nowrap;opacity:0;
-  transition:opacity .16s ease-out,left .2s ease-out,top .2s ease-out}
+.lens{position:absolute;z-index:6;left:0;top:0;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-sizing:border-box;
+  box-shadow:0 12px 32px rgba(0,0,0,.2);padding:.1em .7em .35em;opacity:0;transition:opacity .22s ease-out,top .3s ease-out}
 .lens.on{opacity:1}
-.lens::after{content:"";position:absolute;left:var(--ax,50%);bottom:-8px;width:14px;height:14px;margin-left:-7px;background:var(--panel);
+.lens::after{content:"";position:absolute;left:2.2em;bottom:-8px;width:14px;height:14px;background:var(--panel);
   border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
 .lens.below::after{bottom:auto;top:-8px;transform:rotate(225deg)}
-.lens .lw{font-family:var(--f-text);font-size:2.1em;line-height:1.6;color:var(--fg);padding:.05em .1em 0}
-.lens .ak{display:inline-block;line-height:1.3;padding:.04em 0;border-radius:.2em;vertical-align:baseline}
-.lens .ak.anu{color:var(--anu);background:var(--anu-bg);border-bottom:3px solid var(--anu)}
-.lens .ak.sv{color:var(--sv);background:var(--sv-bg);border-top:3px solid var(--sv)}
-.lens .ak.dsv{color:var(--sv);background:var(--sv-bg);border-top:7px double var(--sv)}
-.lens .ak{transition:transform .24s cubic-bezier(.34,1.56,.64,1),color .2s;transform-origin:50% 60%}
-.lens .ak.now{transform:scale(1.28)}
-.lens .ak.now.anu{transform:translateY(.16em) scale(1.28)}
-.lens .ak.now.sv{transform:translateY(-.16em) scale(1.28)}
-.lens .ak.now.dsv{transform:translateY(-.2em) scale(1.34)}
-.lens .lw.enter{animation:lwIn .3s cubic-bezier(.2,.8,.2,1) both}
-@keyframes lwIn{from{opacity:0;transform:translateX(.4em)}to{opacity:1;transform:none}}
+.lens .ll{font-family:var(--f-text);line-height:2.3;color:var(--fg);white-space:normal}
+.lens .ll.enter{animation:llIn .35s ease-out both}
+@keyframes llIn{from{opacity:0;transform:translateY(.25em)}to{opacity:1;transform:none}}
+.lens .lwd{white-space:nowrap}
+.lens .ak{display:inline-block;line-height:1.3;padding:.04em 0;border-radius:.2em;transform-origin:50% 60%;
+  transition:transform .3s cubic-bezier(.34,1.4,.64,1),color .3s}
+.lens .ak.anu{background:var(--anu-bg);border-bottom:3px solid var(--anu)}
+.lens .ak.sv{background:var(--sv-bg);border-top:3px solid var(--sv)}
+.lens .ak.dsv{background:var(--sv-bg);border-top:7px double var(--sv)}
+.lens .ak.done{color:var(--haldi)}
+.lens .ak.now{transform:scale(1.16);color:var(--haldi)}
+.lens .ak.now.anu{transform:translateY(.07em) scale(1.16);color:var(--anu)}
+.lens .ak.now.sv{transform:translateY(-.07em) scale(1.16);color:var(--sv)}
+.lens .ak.now.dsv{transform:translateY(-.09em) scale(1.2);color:var(--sv)}
+.lens .pc{position:absolute;left:0;top:0;overflow:visible}
+.lens .pd{position:absolute;left:0;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--haldi);
+  box-shadow:0 0 0 3px var(--panel);opacity:0;transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .2s}
+.lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;margin-top:.35em;display:flex;align-items:center;gap:.4em;color:var(--muted)}
 .lens .lb span{animation:lbIn .22s ease-out both}
 @keyframes lbIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.lens .pc{position:relative;height:20px;margin:0 0 .15em}
-.lens .pc svg{position:absolute;left:0;top:0;overflow:visible}
-.lens .pd{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--haldi);
-  box-shadow:0 0 0 3px var(--panel);opacity:0;transition:transform .24s cubic-bezier(.34,1.56,.64,1),opacity .15s}
-.lens .ak.now:not(.anu):not(.sv):not(.dsv){color:var(--haldi)}
-.lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;display:flex;align-items:center;justify-content:center;gap:.4em;color:var(--muted)}
 .lens .lb svg{width:1.6em;height:1em;flex:none}
 .lens .lb.anu{color:var(--anu)}
 .lens .lb.sv,.lens .lb.dsv{color:var(--sv)}
 .no-lens .lens{display:none}
-@media (prefers-reduced-motion: reduce){.lens .ak.now,.lens .ak.now.anu,.lens .ak.now.sv,.lens .ak.now.dsv,.vedic-on .ln.cur{transform:none}.lens .lw.enter,.lens .lb span,.sw.hot{animation:none}}
+@media (prefers-reduced-motion: reduce){.lens .ak.now,.lens .ak.now.anu,.lens .ak.now.sv,.lens .ak.now.dsv,.focus-on.vedic-on .ln.cur{transform:none}.lens .ll.enter,.lens .lb span,.sw.hot{animation:none}}
+/* practice: the chosen portion, drawn behind the text */
+.rg{position:absolute;z-index:-2;pointer-events:none;background:var(--rng);border-radius:.3em}
+.rg.a{box-shadow:inset 4px 0 0 var(--haldi)}
+.rg.b{box-shadow:inset -4px 0 0 var(--haldi)}
+.rg.a.b{box-shadow:inset 4px 0 0 var(--haldi),inset -4px 0 0 var(--haldi)}
+.rg.pick{animation:rgPick 1.2s ease-in-out infinite}
+@keyframes rgPick{50%{opacity:.45}}
+.practising .ln{cursor:copy}
+.prac{display:flex;flex-direction:column;gap:.5rem;padding:.65rem .75rem 0}
+.prac .pmsg{font-weight:700;font-size:1.02rem}
+.prac .row{gap:.5rem}
+.prac select.btn,.prac .btn{min-height:2.75rem;padding:.45rem .8rem}
 /* legend card for Vedic texts */
 .swkey{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;
   padding:.9rem 1rem;margin:1rem 0 1.5rem;font-family:var(--f-ui);font-size:1rem;color:var(--muted)}
@@ -286,6 +298,16 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
 <div class="dock" hidden data-js>
 <div class="meter" id="meter" hidden title="Your voice level"><i></i><b></b></div>
 <div class="dock-in" id="dock">
+  <div class="prac" id="pracRow" hidden>
+    <div class="row"><span class="pmsg grow" id="pracMsg" aria-live="polite"></span><button class="btn" id="pDone">Done</button></div>
+    <div class="row">
+      <button class="btn" id="pLine">Whole line</button>
+      <button class="btn" id="pSec">Whole anuvāka</button>
+      <select class="btn" id="pReps" aria-label="How many times"><option value="0">Keep repeating</option><option value="3">3 times</option><option value="5">5 times</option><option value="11">11 times</option></select>
+      <select class="btn" id="pGap" aria-label="Pause after each time"><option value="0">No pause</option><option value="2">2 s pause</option><option value="4">4 s · your turn</option><option value="8">8 s · your turn</option></select>
+      <select class="btn" id="pRate" aria-label="Speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1">1×</option></select>
+    </div>
+  </div>
   <div class="bar">
     <!-- recite -->
     <div id="dRecite" class="bar-main">
@@ -324,7 +346,10 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
           <option value="0.5">0.5× learn</option><option value="0.75">0.75× slower</option><option value="0.9">0.9×</option><option value="1" selected>1× normal</option><option value="1.1">1.1×</option><option value="1.25">1.25× faster</option>
         </select>
       </div>
-      <div class="row"><button class="switch" id="loopBtn" role="switch" aria-checked="false"><span class="trk"></span>Repeat this line</button></div>
+      <div class="row"><button class="btn primary" id="pracBtn">Practise a portion…</button><span class="status grow">Loop a few words, a line or an anuvāka</span></div>
+      <span class="lbl vedic">Swara emphasis</span>
+      <div class="row vedic"><button class="switch" id="lensBtn" role="switch" aria-checked="true"><span class="trk"></span>Zoom lens</button><span class="status grow">the line being sung, large, above it</span></div>
+      <div class="row vedic"><button class="switch" id="focusBtn" role="switch" aria-checked="true"><span class="trk"></span>Focus line</button><span class="status grow">zoom the line, fade the rest</span></div>
       <span class="lbl">Recording</span>
       <div class="row">
         <span class="status grow" id="fileName">No recording yet</span>
@@ -372,7 +397,6 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     <div class="set-row"><span>Text size</span><input type="range" id="sScale" min="0.8" max="1.8" step="0.05"></div>
     <div class="set-row"><span>Show word breaks (‐)</span><button class="btn" id="sBreaks" aria-pressed="true">On</button></div>
     <div class="set-row vedic"><span>Swara marks: <span class="key anu"></span>anudātta <span class="key sv"></span>svarita</span><button class="btn" id="sSwara" aria-pressed="true">On</button></div>
-    <div class="set-row vedic"><span>Swara lens: magnify the word being sung</span><button class="btn" id="sLens" aria-pressed="true">On</button></div>
     <div class="set-row vedic"><span>Pause marks from the recording (’)</span><button class="btn" id="sPauses" aria-pressed="true">On</button></div>
     <h3>Recite mode</h3>
     <div class="set-row"><span>Pause that confirms a line end</span><input type="range" id="sPause" min="0.08" max="1" step="0.02"><span class="status" id="sPauseV"></span></div>
@@ -400,9 +424,11 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     <h3 class="vedic">Swaras and pauses (Vedic texts)</h3>
     <ul class="vedic">
       <li><b>Blue, line under</b> a syllable: anudātta, sung low. <b>Orange, line over</b>: svarita, the rise. <b>Orange, double line</b>: dīrgha svarita, the long rise.</li>
-      <li>While the recording plays, the <b>lens</b> above the line shows the word being sung, large. The syllable being sung grows, and its swara is named below it. The lens follows word timings from the recording; within a word, syllable timing is estimated from short and long syllables.</li>
+      <li>While the recording plays, the <b>zoom lens</b> above the line shows the whole line, large. The light moves through it syllable by syllable, the syllable being sung grows a little, and its swara is named below. A pitch line under the words shows low, middle and high. Word timings come from the recording; within a word, syllable timing is estimated from short and long syllables.</li>
       <li><b>’</b> marks a pause the reciter takes in this recording. It glows while the pause is happening.</li>
-      <li><b>Tap any word</b> to hear it from the recording. <b>More</b> → <b>Repeat this line</b> plays one line again and again; choose <b>0.5×</b> speed to learn slowly. The pitch stays true when slowed.</li>
+      <li><b>Tap any word</b> to hear it from the recording.</li>
+      <li><b>Practise:</b> More → <b>Practise a portion</b>. Tap the first word, then the last word (or tap a line, or choose the whole anuvāka). It plays that portion again and again. Choose how many times, a pause after each time to repeat it yourself, and a slower speed. The pitch stays true when slowed.</li>
+      <li>The <b>zoom lens</b> and <b>focus line</b> can be switched off in <b>More</b>.</li>
     </ul>
     <h3>Chant on your own</h3>
     <ul>
@@ -543,14 +569,14 @@ function render(){
           const w=weight(tok); total+=w; words.push({el:sp,w,end:total});
           el.appendChild(sp); if(ti<toks.length-1) el.appendChild(document.createTextNode(" "));
         });
-        S.lines.push({text:line,words,weight:Math.max(1,total)}); S.els.push(el); vd.appendChild(el);
+        S.lines.push({text:line,words,weight:Math.max(1,total),sec:si}); S.els.push(el); vd.appendChild(el);
       });
       root.appendChild(vd);
     });
   });
   S.cur=Math.min(LS.get("pos."+t.id,0),S.lines.length-1);
   Swara.active=Swara.has(t);
-  document.body.classList.toggle("vedic-on",Swara.active); Lens.reset();
+  document.body.classList.toggle("vedic-on",Swara.active); Lens.reset(); Practice.close();
   document.querySelectorAll(".vedic").forEach(x=>x.hidden=!Swara.active);
   if(S.rec&&S.audioKey) Pauses.mark(); else Swara.refresh();
   paintAll(); setCur(S.cur,{scroll:"instant"});
@@ -679,7 +705,7 @@ const Swara = {
     if(!this.active){ S.els.forEach(el=>el.querySelectorAll(".sw").forEach(x=>x.remove())); return; }
     for(let i=0;i<S.els.length;i++) this.drawLine(i);
   },
-  refresh(){ clearTimeout(this._t); this._t=setTimeout(()=>{ this.drawAll(); Lens.place(); },60); },
+  refresh(){ clearTimeout(this._t); this._t=setTimeout(()=>{ this.drawAll(); Lens.place(); Practice.paint(); },60); },
   legend(){
     const d=document.createElement("div"); d.className="swkey"; d.setAttribute("role","note");
     d.innerHTML='<span><span class="g anu">क॒</span><span><b>anudātta</b> · low</span></span>'+
@@ -714,92 +740,95 @@ const Akshara = {
   }
 };
 
-/* ---------- the lens: the word being sung, magnified, in step with the recording ---------- */
+const Focus = { on: LS.get("focus",true) };   // zoom the line being sung, fade the rest
+/* ---------- the swara lens: the whole line being sung, magnified; it stays still while the light moves through it ---------- */
 const Lens = {
   on: LS.get("lens",true),
   NAME: {anu:"anudātta · low", sv:"svarita · rising", dsv:"dīrgha svarita · long rise"},
   ICON: {anu:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 3 L9 11 L22 11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
          sv:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 11 L12 3 L22 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
          dsv:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 12 L9 3 L22 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
-  el:null, key:null, now:-1, hot:null,
+  LEVEL: {anu:1, sv:0, dsv:0},   // pitch line from the swara marks: low, middle (unmarked), high
+  el:null, i:-1, items:[], state:"", hot:null, kind:"",
   reset(){ this.hide(); if(this.el){ this.el.remove(); this.el=null; } },
-  hide(){ if(this.el){ this.el.classList.remove("on"); } this.key=null; this.now=-1; this.heat(null); },
+  hide(){ if(this.el) this.el.classList.remove("on"); this.i=-1; this.state=""; this.heat(null); },
   heat(sw){ if(this.hot&&this.hot!==sw) this.hot.classList.remove("hot"); this.hot=sw; if(sw) sw.classList.add("hot"); },
-  build(i,k){
-    const L=S.lines[i], w=L.words[k], node=w.el.firstChild; if(!node||node.nodeType!==3) return false;
-    const s=node.data; w.ak=w.ak||Akshara.split(s);
+  build(i){
+    const L=S.lines[i]; if(!L) return false;
     if(!this.el){ this.el=document.createElement("div"); this.el.className="lens"; this.el.setAttribute("aria-hidden","true");
-      this.el.innerHTML='<div class="lw"></div><div class="pc"><svg></svg><i class="pd"></i></div><div class="lb"></div>'; }
-    const lw=this.el.firstChild; lw.textContent=""; this.ak=w.ak;
-    lw.classList.remove("enter"); void lw.offsetWidth; lw.classList.add("enter");
-    w.ak.forEach(a=>{ const sp=document.createElement("span"); sp.className="ak"+(a.kind?" "+a.kind:""); sp.textContent=s.slice(a.s,a.e); lw.appendChild(sp); });
+      this.el.innerHTML='<div class="ll"></div><svg class="pc"></svg><i class="pd"></i><div class="lb"></div>'; }
+    const ll=this.el.firstChild; ll.textContent=""; this.items=[];
+    L.words.forEach((w,k)=>{
+      const node=w.el.firstChild; if(!node||node.nodeType!==3) return;
+      const s=node.data; w.ak=w.ak||Akshara.split(s);
+      const wd=document.createElement("span"); wd.className="lwd";
+      w.ak.forEach((a,q)=>{ const sp=document.createElement("span"); sp.className="ak"+(a.kind?" "+a.kind:""); sp.textContent=s.slice(a.s,a.e); wd.appendChild(sp); this.items.push({k,q,a,el:sp}); });
+      ll.appendChild(wd); ll.appendChild(document.createTextNode(" "));
+    });
     const host=S.els[i]; if(this.el.parentNode!==host) host.appendChild(this.el);
     this.el.style.fontSize=parseFloat(getComputedStyle(host).fontSize)+"px";
-    this.i=i; this.k=k; this.now=-1; this.setLabel("");
+    ll.classList.remove("enter"); void ll.offsetWidth; ll.classList.add("enter");
+    this.i=i; this.state=""; this.kind=null; this.setLabel("");
     this.place();
+    if(!LS.get("lensHint",false)){ LS.set("lensHint",true); toast("The zoom lens shows the line being sung. Switch it off in More if you prefer.",5000); }
     return true;
   },
   setLabel(kind){
+    if(kind===this.kind) return; this.kind=kind;
     const lb=this.el.lastChild; lb.className="lb"+(kind?" "+kind:"");
     lb.innerHTML=kind?this.ICON[kind]+"<span>"+this.NAME[kind]+"</span>":"";
   },
   place(){
-    const e=this.el; if(!e||this.key==null||!e.parentNode) return;
-    const L=S.lines[this.i], w=L&&L.words[this.k]; if(!w) return;
-    const host=S.els[this.i], hb=host.getBoundingClientRect(), wb=w.el.getBoundingClientRect(), sb=SC.getBoundingClientRect();
-    const z=(hb.width/host.offsetWidth)||1;   // the line being sung is zoomed; work in its own units
-    const lw=e.firstChild; lw.style.fontSize="";
-    let W=e.offsetWidth; const room=host.clientWidth+8;
-    if(W>room){ lw.style.fontSize=(2.1*room/W).toFixed(2)+"em"; W=e.offsetWidth; }   // long words: shrink to fit the column
-    const H=e.offsetHeight, cx=(wb.left-hb.left+wb.width/2)/z;
-    const x=Math.max(-4,Math.min(host.offsetWidth-W+4,cx-W/2));
-    const below=wb.top-sb.top<H*z+12;   // no room above (top of the screen): show it under the word
-    const y=below? (wb.bottom-hb.top)/z+10 : (wb.top-hb.top)/z-H-8+parseFloat(getComputedStyle(host).fontSize)*0.35;
+    const e=this.el; if(!e||this.i<0||!e.parentNode) return;
+    const host=S.els[this.i], hb=host.getBoundingClientRect(), sb=SC.getBoundingClientRect();
+    const z=(hb.width/host.offsetWidth)||1;   // the focus line is zoomed; work in its own units
+    const ll=e.firstChild;
+    e.style.width=host.offsetWidth+"px";
+    let f=1.5; ll.style.fontSize=f+"em";       // large, but at most two rows
+    while(f>1.05&&ll.offsetHeight>parseFloat(getComputedStyle(ll).lineHeight)*2.2){ f-=0.1; ll.style.fontSize=f.toFixed(2)+"em"; }
+    const H=e.offsetHeight, below=hb.top-sb.top<H*z+14;   // no room above (top of the screen): under the line
     e.classList.toggle("below",below);
-    e.style.left=x+"px"; e.style.top=y+"px"; e.style.setProperty("--ax",Math.max(16,Math.min(W-16,cx-x))+"px");
+    e.style.left="0px"; e.style.top=(below? host.offsetHeight+8 : -H-8)+"px";
     this.contour();
   },
-  // pitch line from the swara marks: low (anudātta), middle (unmarked), high (svarita)
-  LEVEL: {anu:1, sv:0, dsv:0},
   contour(){
-    const e=this.el, lw=e.firstChild, pc=e.children[1], svg=pc.firstChild, spans=lw.children, ak=this.ak||[];
-    const Wd=pc.clientWidth, Hd=20, pts=[];
-    for(let q=0;q<spans.length&&q<ak.length;q++){
-      const sp=spans[q], lv=ak[q].kind in this.LEVEL? this.LEVEL[ak[q].kind] : 0.5;
-      pts.push([sp.offsetLeft+sp.offsetWidth/2-pc.offsetLeft, 3+lv*14, ak[q].kind]);
-    }
+    const e=this.el, svg=e.children[1], pts=[];
+    this.items.forEach(it=>{ const sp=it.el, lv=it.a.kind in this.LEVEL? this.LEVEL[it.a.kind] : 0.5;
+      pts.push([sp.offsetLeft+sp.offsetWidth/2, sp.offsetTop+sp.offsetHeight+5+lv*11, it.a.kind, sp.offsetTop]); });
     this.pts=pts;
+    svg.setAttribute("width",e.clientWidth); svg.setAttribute("height",e.clientHeight);
     const col=k=>k==="anu"?"var(--anu)":k?"var(--sv)":"var(--dim)";
-    svg.setAttribute("width",Wd); svg.setAttribute("height",Hd);
-    svg.innerHTML=(pts.length>1?'<polyline points="'+pts.map(p=>p[0].toFixed(1)+","+p[1]).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>':"")+
-      pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1]+'" r="'+(p[2]?3.6:2.4)+'" fill="'+col(p[2])+'"/>').join("");
-    this.dot(this.now);
-  },
-  dot(j){
-    const d=this.el&&this.el.querySelector(".pd"), p=this.pts&&this.pts[j]; if(!d) return;
-    if(!p){ d.style.opacity="0"; return; }
-    d.style.opacity="1"; d.style.transform="translate("+p[0].toFixed(1)+"px,"+p[1]+"px)";
+    let html="", run=[];
+    const flush=()=>{ if(run.length>1) html+='<polyline points="'+run.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'; run=[]; };
+    pts.forEach((p,q)=>{ if(q&&Math.abs(p[3]-pts[q-1][3])>4) flush(); run.push(p); }); flush();   // one pitch line per row
+    html+=pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(p[2]?3.4:2.2)+'" fill="'+col(p[2])+'"/>').join("");
+    svg.innerHTML=html;
+    this.state="";
   },
   update(i,t,ws){
-    if(!this.on||!Swara.active||!ws){ if(this.key!=null) this.hide(); return; }
-    // the word most recently started; hold it through short pauses
+    if(!this.on||!Swara.active||!ws){ if(this.i>=0) this.hide(); return; }
+    if(i!==this.i){ if(!this.build(i)) return; requestAnimationFrame(()=>this.el&&this.el.classList.add("on")); }
+    // the word most recently started, and the syllable within it (time shared by short = 1, long = 2)
     let k=-1; for(let q=0;q<ws.length;q++){ if(ws[q]&&ws[q][0]<=t) k=q; }
-    if(k<0||t>ws[k][1]+0.8){ if(this.key!=null) this.hide(); return; }
-    const key=i+":"+k;
-    if(key!==this.key){ this.key=key; if(!this.build(i,k)){ this.key=null; return; } requestAnimationFrame(()=>this.el&&this.el.classList.add("on")); }
-    const w=S.lines[i].words[k], [a,b]=ws[k], ak=w.ak;
-    let j=-1;
-    if(t<b){ const tot=ak.reduce((x,y)=>x+y.w,0); let acc=0; const f=(t-a)/Math.max(0.05,b-a)*tot;
-      for(j=0;j<ak.length-1;j++){ acc+=ak[j].w; if(f<acc) break; } }
-    if(j===this.now) return;
-    this.now=j;
-    const spans=this.el.firstChild.children;
-    for(let q=0;q<spans.length;q++) spans[q].classList.toggle("now",q===j);
-    this.dot(j);
-    const A=ak[j], kind=A&&A.kind;
+    let upto=0, now=-1;
+    if(k>=0){
+      const base=this.items.findIndex(it=>it.k===k), ak=S.lines[i].words[k].ak||[];
+      if(base>=0){
+        const [a,b]=ws[k];
+        if(t<b){ const tot=ak.reduce((x,y)=>x+y.w,0), f=(t-a)/Math.max(0.05,b-a)*tot; let acc=0, q=0;
+          for(;q<ak.length-1;q++){ acc+=ak[q].w; if(f<acc) break; }
+          upto=base+q; now=base+q; }
+        else upto=base+ak.length;
+      }
+    }
+    const st=upto+":"+now; if(st===this.state) return; this.state=st;
+    this.items.forEach((it,q)=>{ it.el.classList.toggle("done",q<upto); it.el.classList.toggle("now",q===now); });
+    const it=this.items[now], kind=it&&it.a.kind;
     this.setLabel(kind||"");
+    const d=this.el.querySelector(".pd"), p=this.pts&&this.pts[now>=0?now:upto-1];
+    if(d){ if(p){ d.style.opacity="1"; d.style.transform="translate("+p[0].toFixed(1)+"px,"+p[1].toFixed(1)+"px)"; } else d.style.opacity="0"; }
     const L=S.lines[i];
-    this.heat(kind&&L.sw? (L.sw.find(x=>x.k===k&&x.m>=A.s&&x.m<A.e)||{}).el||null : null);
+    this.heat(kind&&L.sw? (L.sw.find(x=>x.k===it.k&&x.m>=it.a.s&&x.m<it.a.e)||{}).el||null : null);
   }
 };
 addEventListener("resize",()=>Lens.place());
@@ -841,19 +870,113 @@ const Pauses = {
 };
 
 /* ---------- repeat one line (practice) ---------- */
-const Loop = {
-  line:null,
-  set(on){ this.line=on?S.cur:null; $("loopBtn").setAttribute("aria-checked",!!on); if(on) toast("Repeating this line. Tap another line to repeat that one.",2600); },
+const Practice = {
+  on:false, step:0, a:null, b:null, start:0, end:0, done:0, waitT:null,
+  reps: +LS.get("pReps",0), gap: +LS.get("pGap",0),
+  open(){
+    if(!Music.el||!Music.pts||!Music.pts.length){ toast("Practice needs the recording. Load it first.",3200); return; }
+    setMore(false); this.on=true; this.step=1; this.a=this.b=null;
+    $("pReps").value=this.reps; $("pGap").value=this.gap; $("pRate").value=["0.5","0.75","1"].indexOf($("rate").value)>=0?$("rate").value:"1";
+    $("pracRow").hidden=false; document.body.classList.add("practising");
+    this.say("Tap the first word to practise. Or tap a line, or choose Whole line or Whole anuvāka.");
+    this.paint(); requestAnimationFrame(()=>follow(true));
+  },
+  close(){
+    if(!this.on) return;
+    clearTimeout(this.waitT); this.waitT=null; this.on=false; this.step=0; this.a=this.b=null;
+    $("pracRow").hidden=true; document.body.classList.remove("practising"); this.paint();
+  },
+  say(t){ $("pracMsg").textContent=t; },
+  // time where word k of line i starts (or ends); k==null means the whole line
+  time(i,k,end){
+    const ws=Music.wordsFor(i);
+    if(ws){
+      if(end){ for(let q=(k==null?ws.length-1:k);q>=0;q--) if(ws[q]) return ws[q][1]; }
+      else   { for(let q=(k==null?0:k);q<ws.length;q++) if(ws[q]) return ws[q][0]; }
+    }
+    const p=Music.pts, x=p.findIndex(r=>r[1]===i); if(x<0) return null;
+    return end? (x+1<p.length?p[x+1][0]:Music.el.duration) : p[x][0];
+  },
+  pick(i,k){   // a tap while practising: k = word index, or null for the whole line
+    clearTimeout(this.waitT); this.waitT=null;
+    if(this.step!==2){
+      if(k==null){ this.set({i,k:null},{i,k:null}); return; }
+      this.a={i,k}; this.b=null; this.step=2; if(Music.el&&!Music.el.paused) Music.el.pause();
+      this.say("Now tap the last word."); this.paint(); return;
+    }
+    let b={i,k};
+    const before=(x,y)=>x.i<y.i||(x.i===y.i&&(x.k==null?0:x.k)<(y.k==null?0:y.k));
+    let a=this.a; if(before(b,a)){ const t=a; a={i:b.i,k:b.k}; b=t; }
+    this.set(a,b);
+  },
+  set(a,b){
+    const st=this.time(a.i,a.k,false), en=this.time(b.i,b.k,true);
+    if(st==null||en==null||en<=st){ this.say("That part is not in this recording. Tap another word."); this.step=1; this.a=this.b=null; this.paint(); return; }
+    this.a=a; this.b=b; this.start=Math.max(0,st-0.12); this.end=en+0.25; this.step=3; this.done=0;
+    this.paint(); this.summary();
+    this.jump(); Music.tryPlay();
+  },
+  summary(extra){
+    const n=this.count(), secs=Math.round(this.end-this.start);
+    const what=n===1?"1 word":n+" words";
+    this.say((extra?extra+" ":"")+what+" · "+secs+" s · "+(this.reps?"plays "+this.reps+" times":"repeats until you stop")+(this.gap?", with a "+this.gap+" s pause":"")+". Tap new words to change.");
+  },
+  count(){ let n=0; this.each((L,w)=>{ if(!/^[।॥०-९0-9]+$/.test(w.el.textContent)) n++; }); return n; },
+  each(fn){
+    if(!this.a) return;
+    const b=this.b||this.a;
+    for(let i=this.a.i;i<=b.i;i++){ const L=S.lines[i]; if(!L) continue;
+      const k0=i===this.a.i&&this.a.k!=null?this.a.k:0, k1=i===b.i&&b.k!=null?b.k:L.words.length-1;
+      for(let k=k0;k<=k1;k++) fn(L,L.words[k],i,k,k===k0&&i===this.a.i,k===k1&&i===b.i); }
+  },
+  paint(){   // the chosen portion, drawn behind the text like the swara tiles
+    document.querySelectorAll(".rg").forEach(x=>x.remove());
+    if(!this.on||!this.a) return;
+    const groups=new Map();
+    this.each((L,w,i,k,first,last)=>{
+      const node=w.el.firstChild; if(!node||node.nodeType!==3) return;
+      const el=S.els[i], base=el.getBoundingClientRect(), z=(base.width/el.offsetWidth)||1, fs=parseFloat(getComputedStyle(el).fontSize)||20;
+      const r=document.createRange(); r.selectNodeContents(node); const b=r.getBoundingClientRect();
+      const d=document.createElement("i"); d.className="rg"+(first?" a":"")+(last&&this.b?" b":"")+(this.step===2?" pick":"");
+      d.style.left=((b.left-base.left)/z-fs*0.18)+"px"; d.style.top=((b.top-base.top)/z-fs*0.32)+"px";
+      d.style.width=(b.width/z+fs*0.36)+"px"; d.style.height=(b.height/z+fs*0.64)+"px";
+      el.appendChild(d);
+    });
+  },
+  jump(){ if(Music.el){ Music.el.currentTime=Math.max(0,this.start+S.lag); Music.holdUntil=performance.now()+120; } },
+  ready(){ return this.on&&this.step===3; },
+  inside(heard){ return heard>=this.start-0.6&&heard<=this.end+1.5; },
   check(heard){
-    if(this.line==null||!Music.el||S.times[this.line]==null) return;
-    const p=Music.pts; let idx=-1;
-    for(let k=0;k<p.length;k++) if(p[k][1]===this.line){ idx=k; break; }
-    if(idx<0) return;
-    const start=p[idx][0], end=idx+1<p.length?p[idx+1][0]:Music.el.duration;
-    if(heard>=end-0.05||heard<start-1){ Music.el.currentTime=start+S.lag; Music.holdUntil=performance.now()+120; }
+    if(!this.ready()||!Music.el||Music.el.paused) return;
+    if(!this.inside(heard)){ this.jump(); return; }        // moved away: back to the start of the portion
+    if(heard<this.end) return;
+    this.done++;
+    if(this.reps&&this.done>=this.reps){
+      Music.el.pause(); this.jump(); const n=this.done; this.done=0;
+      this.say("Practised "+n+" times. Press Play to go again, or tap new words."); return;
+    }
+    if(this.gap){
+      Music.el.pause(); this.jump();
+      let left=this.gap; const tick=()=>{
+        if(!this.ready()) return;
+        if(left<=0){ this.waitT=null; this.summary("Time "+(this.done+1)+"."); Music.tryPlay(); return; }
+        this.say("Your turn: chant it now… "+left); left--; this.waitT=setTimeout(tick,1000);
+      }; tick(); return;
+    }
+    this.jump(); this.summary("Time "+(this.done+1)+".");
   }
 };
-$("loopBtn").onclick=()=>Loop.set(Loop.line==null);
+$("pracBtn").onclick=()=>Practice.open();
+$("pDone").onclick=()=>Practice.close();
+$("pLine").onclick=()=>Practice.set({i:S.cur,k:null},{i:S.cur,k:null});
+$("pSec").onclick=()=>{ const sec=S.lines[S.cur]&&S.lines[S.cur].sec; let a=S.cur,b=S.cur;
+  while(a>0&&S.lines[a-1].sec===sec) a--; while(b<S.lines.length-1&&S.lines[b+1].sec===sec) b++;
+  // start at the first line that is in the recording
+  while(a<b&&Practice.time(a,null,false)==null) a++; while(b>a&&Practice.time(b,null,true)==null) b--;
+  Practice.set({i:a,k:null},{i:b,k:null}); };
+$("pReps").onchange=e=>{ Practice.reps=+e.target.value; LS.set("pReps",Practice.reps); Practice.done=0; if(Practice.ready()) Practice.summary(); };
+$("pGap").onchange=e=>{ Practice.gap=+e.target.value; LS.set("pGap",Practice.gap); if(Practice.ready()) Practice.summary(); };
+$("pRate").onchange=e=>{ $("rate").value=e.target.value; if(Music.el) Music.el.playbackRate=+e.target.value; };
 
 /* line clicks */
 $("text").addEventListener("click",e=>{
@@ -863,7 +986,7 @@ $("text").addEventListener("click",e=>{
   if(S.mode==="music"){
     if(Tap.on) return;
     if(Music.adjusting&&Music.el&&!isNaN(Music.el.duration)){ Music.mark(i); return; }
-    if(Loop.line!=null) Loop.line=i;
+    if(Practice.on){ const wEl=e.target.closest(".w"); let k=null; if(wEl) S.lines[i].words.forEach((w,q)=>{ if(w.el===wEl) k=q; }); Practice.pick(i,k); return; }
     const wEl=e.target.closest(".w"), ws=Music.wordsFor(i);
     if(wEl&&ws&&Music.el){
       let k=-1; S.lines[i].words.forEach((w,q)=>{ if(w.el===wEl) k=q; });
@@ -1185,7 +1308,7 @@ const Music = {
   unload(){
     if(this.el){this.el.pause();this.el.removeAttribute("src");}
     S.audioKey=null; S.times=[]; S.syncKey=null; this.pts=[]; S.rec=null; S.extraCues=[]; S.skip=new Set();
-    Pauses.clear(); Loop.set(false); Lens.reset(); document.body.classList.remove("playing");
+    Pauses.clear(); Practice.close(); Lens.reset(); document.body.classList.remove("playing");
     $("builtinBtn").hidden=!hasBuiltinAudio(); $("resetSync").hidden=true;
     $("fileName").textContent="No recording yet"; $("fileBtn").textContent="Choose recording";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=true); $("seek").disabled=true;
@@ -1214,7 +1337,7 @@ const Music = {
     $("tNow").textContent=fmt(t);
     if(!this.seeking&&a.duration) $("seek").value=Math.round(t/a.duration*1000);
     const heard=Math.max(0,t-S.lag);
-    if(!a.paused) Loop.check(heard);
+    if(!a.paused) Practice.check(heard);
     if(!Tap.on&&performance.now()>=(this.holdUntil||0)){
       const hit=this.lineAt(heard);
       if(hit){
@@ -1263,6 +1386,7 @@ Music.why=function(){
 };
 Music.tryPlay=function(again){
   const a=this.el; if(!a) return;
+  if(Practice.ready()){ clearTimeout(Practice.waitT); Practice.waitT=null; if(!Practice.inside(Math.max(0,a.currentTime-S.lag))||a.currentTime-S.lag>=Practice.end) Practice.jump(); }
   a.play().catch(e=>{
     const n=e&&e.name;
     if(n==="AbortError"&&!again){ a.addEventListener("canplay",()=>this.tryPlay(true),{once:true}); return; }   // the recording was still being swapped in
@@ -1270,7 +1394,7 @@ Music.tryPlay=function(again){
     toast(this.why(),7000);
   });
 };
-$("playBtn").onclick=()=>{ const a=Music.el; if(!a) return; a.paused?Music.tryPlay():a.pause(); };
+$("playBtn").onclick=()=>{ const a=Music.el; if(!a) return; if(Practice.waitT){ clearTimeout(Practice.waitT); Practice.waitT=null; Practice.summary(); return; } a.paused?Music.tryPlay():a.pause(); };
 $("rate").onchange=e=>{ if(Music.el) Music.el.playbackRate=+e.target.value; };
 $("seek").addEventListener("input",e=>{ Music.seeking=true; const a=Music.el; if(a&&a.duration){ a.currentTime=e.target.value/1000*a.duration; $("tNow").textContent=fmt(a.currentTime); if(a.paused) Music.loop(); } });
 $("seek").addEventListener("change",()=>{ Music.seeking=false; });
@@ -1442,15 +1566,17 @@ function applySettings(){
   $("sScale").value=S.scale; $("sPause").value=S.pause; $("sSens").value=S.sens;
   $("sPauseV").textContent=S.pause.toFixed(2)+"s"; $("sLag").value=S.lag; $("sLagV").textContent=S.lag.toFixed(2)+"s"; $("sSensV").textContent=S.sens.toFixed(1)+"×";
   $("sBreaks").textContent=S.breaks?"On":"Off"; $("sBreaks").setAttribute("aria-pressed",S.breaks); $("sBreaks").classList.toggle("on",S.breaks);
-  document.body.classList.toggle("no-lens",!Lens.on);
-  [["sSwara",Swara.on],["sPauses",Pauses.on],["sLens",Lens.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
+  document.body.classList.toggle("no-lens",!Lens.on); document.body.classList.toggle("focus-on",Focus.on);
+  $("lensBtn").setAttribute("aria-checked",Lens.on); $("focusBtn").setAttribute("aria-checked",Focus.on);
+  [["sSwara",Swara.on],["sPauses",Pauses.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
 }
 $("setBtn").onclick=()=>{ applySettings(); $("setSheet").hidden=false; };
 $("setClose").onclick=()=>$("setSheet").hidden=true;
 $("setSheet").addEventListener("click",e=>{ if(e.target.id==="setSheet") e.target.hidden=true; });
 $("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); Swara.refresh(); };
 $("sSwara").onclick=()=>{ Swara.on=!Swara.on; LS.set("swara",Swara.on); applySettings(); Swara.drawAll(); };
-$("sLens").onclick=()=>{ Lens.on=!Lens.on; LS.set("lens",Lens.on); if(!Lens.on) Lens.hide(); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
+$("lensBtn").onclick=()=>{ Lens.on=!Lens.on; LS.set("lens",Lens.on); if(!Lens.on) Lens.hide(); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
+$("focusBtn").onclick=()=>{ Focus.on=!Focus.on; LS.set("focus",Focus.on); applySettings(); Swara.refresh(); };
 $("sPauses").onclick=()=>{ Pauses.on=!Pauses.on; LS.set("pauses",Pauses.on); applySettings(); document.body.classList.toggle("no-pause",!Pauses.on); Swara.refresh(); };
 $("sPause").oninput=e=>{ S.pause=+e.target.value; LS.set("pause3",S.pause); applySettings(); };
 $("sLag").oninput=e=>{ S.lag=+e.target.value; LS.set("lag2",S.lag); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
