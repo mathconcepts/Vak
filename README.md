@@ -33,7 +33,8 @@ Put the prayer on a screen and let it keep the place for her:
   - Make the text bigger.
   - Fix the timing if a Bluetooth speaker runs late.
 - **For Vedic chanting (Sri Rudram):**
-  - Swara guides: a **blue line under** each anudātta (low) syllable, an **orange stroke over** each svarita (rising) one, and a **double stroke** for dīrgha svarita.
+  - Swara tiles: each anudātta (low) syllable sits on a **blue tile with a line under**, each svarita (rising) one on an **orange tile with a line over**, and dīrgha svarita has a **double line**.
+  - The **swara lens** shows the word being sung, twice as large, above the line. The syllable being sung grows, and its swara is named. See [docs/SWARA-UX.md](docs/SWARA-UX.md).
   - Pause marks **’** and **’’** show where the reciter pauses, taken from the recording itself.
   - Tap a word to hear it. "Repeat this line" practises one line. **0.5×** slows the voice without changing its pitch.
 

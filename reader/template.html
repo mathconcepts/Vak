@@ -20,17 +20,18 @@
   --scale:1.15;
   --anu:#4fa3d8;   /* anudātta: low pitch */
   --sv:#ef6a3c;    /* svarita: rising pitch */
+  --anu-bg:rgba(79,163,216,.22);--sv-bg:rgba(239,106,60,.22);--anu-hot:rgba(79,163,216,.45);--sv-hot:rgba(239,106,60,.45);
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-    --anu:#1f6fb0;--sv:#c2410c;
+    --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
     --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
     --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
   }
 }
 :root[data-theme="light"]{
-  --anu:#1f6fb0;--sv:#c2410c;
+  --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
   --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
   --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
 }
@@ -83,18 +84,56 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .hint b{color:var(--fg);font-weight:500}
 .sec-h{font-family:var(--f-text);color:var(--sindoor);text-align:center;font-size:calc(1.25rem*var(--scale));margin:2.2rem 0 1rem;text-wrap:balance}
 /* Vedic swara guides: drawn in a layer over the text (letters are never split), so they work on every browser */
-.ln{position:relative}
-.sw{position:absolute;pointer-events:none;border-radius:2px;height:3px}
-.sw.anu{background:var(--anu)}
-.sw.sv{background:var(--sv)}
-.sw.dsv{background:var(--sv);height:2px;box-shadow:0 -4px 0 var(--sv)}
+.ln{position:relative;isolation:isolate}
+.ln.cur{z-index:2}
+.vedic-on .ln{line-height:2.25}
+/* a soft tint behind the whole syllable, plus a shape: line under = low, line over = rising, double = long */
+.sw{position:absolute;pointer-events:none;z-index:-1;border-radius:.3em;box-sizing:border-box;transition:background-color .2s,box-shadow .2s}
+.sw.anu{background:var(--anu-bg);border-bottom:.13em solid var(--anu)}
+.sw.sv{background:var(--sv-bg);border-top:.13em solid var(--sv)}
+.sw.dsv{background:var(--sv-bg);border-top:.36em double var(--sv)}
+.past .sw{opacity:.55}
+.sw.hot.anu{background:var(--anu-hot);box-shadow:0 0 0 2px var(--anu)}
+.sw.hot.sv,.sw.hot.dsv{background:var(--sv-hot);box-shadow:0 0 0 2px var(--sv)}
 .no-swara .sw{display:none}
+/* the lens: the word being sung, magnified above the line; the syllable being sung grows */
+.lens{position:absolute;z-index:6;left:0;top:0;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 12px 32px rgba(0,0,0,.22);padding:.1em .7em .45em;text-align:center;white-space:nowrap;opacity:0;
+  transition:opacity .16s ease-out,left .2s ease-out,top .2s ease-out}
+.lens.on{opacity:1}
+.lens::after{content:"";position:absolute;left:var(--ax,50%);bottom:-8px;width:14px;height:14px;margin-left:-7px;background:var(--panel);
+  border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.lens.below::after{bottom:auto;top:-8px;transform:rotate(225deg)}
+.lens .lw{font-family:var(--f-text);font-size:2.1em;line-height:1.6;color:var(--fg);padding:.05em .1em 0}
+.lens .ak{display:inline-block;line-height:1.3;padding:.04em 0;border-radius:.2em;vertical-align:baseline}
+.lens .ak.anu{color:var(--anu);background:var(--anu-bg);border-bottom:3px solid var(--anu)}
+.lens .ak.sv{color:var(--sv);background:var(--sv-bg);border-top:3px solid var(--sv)}
+.lens .ak.dsv{color:var(--sv);background:var(--sv-bg);border-top:7px double var(--sv)}
+.lens .ak.now{transform:scale(1.2);transform-origin:50% 60%;transition:transform .16s cubic-bezier(.3,1.5,.5,1)}
+.lens .ak.now:not(.anu):not(.sv):not(.dsv){color:var(--haldi)}
+.lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;display:flex;align-items:center;justify-content:center;gap:.4em;color:var(--muted)}
+.lens .lb svg{width:1.6em;height:1em;flex:none}
+.lens .lb.anu{color:var(--anu)}
+.lens .lb.sv,.lens .lb.dsv{color:var(--sv)}
+.no-lens .lens{display:none}
+@media (prefers-reduced-motion: reduce){.lens .ak.now{transform:none}}
+/* legend card for Vedic texts */
+.swkey{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:.9rem 1rem;margin:1rem 0 1.5rem;font-family:var(--f-ui);font-size:1rem;color:var(--muted)}
+.swkey > span{display:flex;align-items:center;gap:.5rem}
+.swkey .g{font-family:var(--f-text);font-size:1.7rem;line-height:1.5;padding:0 .3em;border-radius:.3em;color:var(--fg)}
+.swkey .g.anu{background:var(--anu-bg);border-bottom:.13em solid var(--anu)}
+.swkey .g.sv{background:var(--sv-bg);border-top:.13em solid var(--sv)}
+.swkey .g.dsv{background:var(--sv-bg);border-top:.36em double var(--sv)}
+.swkey b{color:var(--fg);font-weight:700}
+.swkey .pzk{font-weight:700;color:var(--sindoor);font-size:1.3rem}
 /* pauses heard in the recording */
 .pz{display:inline-block;color:var(--sindoor);opacity:.55;font-family:var(--f-ui);font-weight:700;font-size:.8em;margin:0 .05em 0 -.15em;transition:opacity .2s,transform .2s}
 .pz.long{letter-spacing:-.05em}
 .ln.cur .pz.now{opacity:1;transform:scale(1.5)}
 .no-pause .pz{display:none}
-.key{display:inline-block;width:1.4em;height:3px;border-radius:2px;vertical-align:middle;margin:0 .25em}
+.key{display:inline-block;width:1.1em;height:.8em;border-radius:.2em;vertical-align:-.05em;margin:0 .25em}
+.key.anu{background:var(--anu-bg);border-bottom:3px solid var(--anu)}.key.sv{background:var(--sv-bg);border-top:3px solid var(--sv)}
 .note{font-family:"Alegreya Sans","Tiro Devanagari Sanskrit","Noto Serif Devanagari",serif;font-style:italic;color:var(--dim);text-align:center;font-size:calc(.95rem*var(--scale));margin:1rem auto;max-width:34em}
 .sec-h::before,.sec-h::after{content:"✦";font-size:.6em;color:var(--dim);margin:0 .6em;vertical-align:.25em}
 .verse{margin:0 0 1.15rem;padding:.2rem 0}
@@ -313,7 +352,8 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     <div class="row"><h2 id="setH" class="grow">Reading settings</h2><button class="btn" id="setClose">Close</button></div>
     <div class="set-row"><span>Text size</span><input type="range" id="sScale" min="0.8" max="1.8" step="0.05"></div>
     <div class="set-row"><span>Show word breaks (‐)</span><button class="btn" id="sBreaks" aria-pressed="true">On</button></div>
-    <div class="set-row vedic"><span>Swara guides: <span class="key" style="background:var(--anu)"></span>anudātta <span class="key" style="background:var(--sv)"></span>svarita</span><button class="btn" id="sSwara" aria-pressed="true">On</button></div>
+    <div class="set-row vedic"><span>Swara marks: <span class="key anu"></span>anudātta <span class="key sv"></span>svarita</span><button class="btn" id="sSwara" aria-pressed="true">On</button></div>
+    <div class="set-row vedic"><span>Swara lens: magnify the word being sung</span><button class="btn" id="sLens" aria-pressed="true">On</button></div>
     <div class="set-row vedic"><span>Pause marks from the recording (’)</span><button class="btn" id="sPauses" aria-pressed="true">On</button></div>
     <h3>Recite mode</h3>
     <div class="set-row"><span>Pause that confirms a line end</span><input type="range" id="sPause" min="0.08" max="1" step="0.02"><span class="status" id="sPauseV"></span></div>
@@ -340,7 +380,8 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     </ul>
     <h3 class="vedic">Swaras and pauses (Vedic texts)</h3>
     <ul class="vedic">
-      <li><b>Blue bar under</b> a syllable: anudātta, sung low. <b>Orange bar over</b>: svarita, the rise. <b>Double bar</b>: dīrgha svarita. Unmarked syllables are udātta.</li>
+      <li><b>Blue, line under</b> a syllable: anudātta, sung low. <b>Orange, line over</b>: svarita, the rise. <b>Orange, double line</b>: dīrgha svarita, the long rise.</li>
+      <li>While the recording plays, the <b>lens</b> above the line shows the word being sung, large. The syllable being sung grows, and its swara is named below it. The lens follows word timings from the recording; within a word, syllable timing is estimated from short and long syllables.</li>
       <li><b>’</b> marks a pause the reciter takes in this recording. It glows while the pause is happening.</li>
       <li><b>Tap any word</b> to hear it from the recording. <b>More</b> → <b>Repeat this line</b> plays one line again and again; choose <b>0.5×</b> speed to learn slowly. The pitch stays true when slowed.</li>
     </ul>
@@ -468,7 +509,9 @@ function render(){
   t.sections.forEach((sec,si)=>{
     if(sec.title){const h=document.createElement("h2");h.className="sec-h";h.textContent=sec.title;root.appendChild(h);}
     sec.verses.forEach(v=>{
-      if(!isVerse(v)){ const n=document.createElement("p"); n.className="note"; n.textContent=v.note; root.appendChild(n); return; }
+      if(!isVerse(v)){
+        if(Swara.has(t)&&/^Swaras:/.test(v.note)){ root.appendChild(Swara.legend()); return; }
+        const n=document.createElement("p"); n.className="note"; n.textContent=v.note; root.appendChild(n); return; }
       const vd=document.createElement("div"); vd.className="verse";
       v.forEach(line=>{
         const i=S.lines.length;
@@ -488,6 +531,7 @@ function render(){
   });
   S.cur=Math.min(LS.get("pos."+t.id,0),S.lines.length-1);
   Swara.active=Swara.has(t);
+  document.body.classList.toggle("vedic-on",Swara.active); Lens.reset();
   document.querySelectorAll(".vedic").forEach(x=>x.hidden=!Swara.active);
   if(S.rec&&S.audioKey) Pauses.mark(); else Swara.refresh();
   paintAll(); setCur(S.cur,{scroll:"instant"});
@@ -593,10 +637,11 @@ const Swara = {
   drawLine(i){
     const el=S.els[i]; if(!el) return;
     el.querySelectorAll(".sw").forEach(x=>x.remove());
+    const L=S.lines[i]; L.sw=[];
     if(!this.on||!this.active) return;
     const base=el.getBoundingClientRect(), out=[];
     const fs=parseFloat(getComputedStyle(el).fontSize)||20;
-    S.lines[i].words.forEach(w=>{
+    L.words.forEach((w,k)=>{
       const node=w.el.firstChild; if(!node||node.nodeType!==3) return;
       const s=node.data;
       for(let m=0;m<s.length;m++){
@@ -604,20 +649,116 @@ const Swara = {
         const r=document.createRange(); r.setStart(node,this.start(s,m)); r.setEnd(node,m+1);
         const rs=r.getClientRects(); if(!rs.length) continue;
         const b=rs[0];
-        // the glyph box is taller than the ink: place guides just outside the letters
-        const top=kind==="anu"? b.bottom-base.top-fs*0.32 : b.top-base.top+fs*0.18;
-        out.push([kind,b.left-base.left+fs*0.06,top,Math.max(4,b.width-fs*0.12)]);
+        // the glyph box is taller than the ink: trim it to the letters and their swara marks
+        out.push([kind,b.left-base.left-fs*0.05,b.top-base.top-fs*0.3,b.width+fs*0.1,b.height+fs*0.62,k,m]);
       }
     });
-    out.forEach(([k,x,y,wd])=>{ const d=document.createElement("i"); d.className="sw "+k; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=wd+"px"; el.appendChild(d); });
+    out.forEach(([kd,x,y,wd,h,k,m])=>{ const d=document.createElement("i"); d.className="sw "+kd; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=wd+"px"; d.style.height=h+"px"; el.appendChild(d); L.sw.push({k,m,el:d}); });
   },
   drawAll(){
     document.body.classList.toggle("no-swara",!this.on);
     if(!this.active){ S.els.forEach(el=>el.querySelectorAll(".sw").forEach(x=>x.remove())); return; }
     for(let i=0;i<S.els.length;i++) this.drawLine(i);
   },
-  refresh(){ clearTimeout(this._t); this._t=setTimeout(()=>this.drawAll(),60); }
+  refresh(){ clearTimeout(this._t); this._t=setTimeout(()=>{ this.drawAll(); Lens.place(); },60); },
+  legend(){
+    const d=document.createElement("div"); d.className="swkey"; d.setAttribute("role","note");
+    d.innerHTML='<span><span class="g anu">क॒</span><span><b>anudātta</b> · low</span></span>'+
+      '<span><span class="g sv">क॑</span><span><b>svarita</b> · rising</span></span>'+
+      '<span><span class="g dsv">का᳚</span><span><b>dīrgha svarita</b> · long rise</span></span>'+
+      '<span><span class="pzk">’</span><span><b>pause</b> in the recording</span></span>';
+    return d;
+  }
 };
+
+/* ---------- syllables (aksharas): split a word without breaking conjuncts, short = 1, long = 2 ---------- */
+const Akshara = {
+  V: /[\u0904-\u0914\u0960\u0961\u0950]/, C: /[\u0915-\u0939\u0958-\u095F\u0978-\u097F]/,
+  LONG: /[\u093E\u0940\u0942\u0944\u0947\u0948\u094B\u094C\u0963\u0906\u0908\u090A\u0960\u090F\u0910\u0913\u0914\u0902\u0903\uA8F3\u0950]/,
+  split(s){
+    const out=[]; let cur=null;
+    for(let i=0;i<s.length;i++){
+      const c=s[i], fresh=(this.V.test(c)||this.C.test(c))&&!(i>0&&s[i-1]==="\u094D"&&this.C.test(c));
+      if(fresh||!cur){ if(cur) out.push(cur); cur={s:i,e:i+1}; } else cur.e=i+1;
+    }
+    if(cur) out.push(cur);
+    // a dead consonant at the end of the word (म्, त्) closes the syllable before it
+    if(out.length>1){ const z=out[out.length-1], tx=s.slice(z.s,z.e).replace(/[\u0951\u0952\u1CDA]/g,"");
+      if(/^.\u094D$/.test(tx)){ out.pop(); out[out.length-1].e=z.e; out[out.length-1].closed=true; } }
+    out.forEach((a,j)=>{
+      const tx=s.slice(a.s,a.e), nx=out[j+1]&&s.slice(out[j+1].s,out[j+1].e);
+      a.w=(this.LONG.test(tx)||a.closed||(nx&&/\u094D/.test(nx.replace(/\u094D$/,""))))?2:1;
+      if(/\u0950/.test(tx)) a.w=3;
+      a.kind=""; for(const ch in Swara.KIND) if(tx.indexOf(ch)>=0) a.kind=Swara.KIND[ch];
+    });
+    return out;
+  }
+};
+
+/* ---------- the lens: the word being sung, magnified, in step with the recording ---------- */
+const Lens = {
+  on: LS.get("lens",true),
+  NAME: {anu:"anudātta · low", sv:"svarita · rising", dsv:"dīrgha svarita · long rise"},
+  ICON: {anu:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 3 L9 11 L22 11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+         sv:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 11 L12 3 L22 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+         dsv:'<svg viewBox="0 0 24 14" aria-hidden="true"><path d="M2 12 L9 3 L22 3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'},
+  el:null, key:null, now:-1, hot:null,
+  reset(){ this.hide(); if(this.el){ this.el.remove(); this.el=null; } },
+  hide(){ if(this.el){ this.el.classList.remove("on"); } this.key=null; this.now=-1; this.heat(null); },
+  heat(sw){ if(this.hot&&this.hot!==sw) this.hot.classList.remove("hot"); this.hot=sw; if(sw) sw.classList.add("hot"); },
+  build(i,k){
+    const L=S.lines[i], w=L.words[k], node=w.el.firstChild; if(!node||node.nodeType!==3) return false;
+    const s=node.data; w.ak=w.ak||Akshara.split(s);
+    if(!this.el){ this.el=document.createElement("div"); this.el.className="lens"; this.el.setAttribute("aria-hidden","true");
+      this.el.innerHTML='<div class="lw"></div><div class="lb"></div>'; }
+    const lw=this.el.firstChild; lw.textContent="";
+    w.ak.forEach(a=>{ const sp=document.createElement("span"); sp.className="ak"+(a.kind?" "+a.kind:""); sp.textContent=s.slice(a.s,a.e); lw.appendChild(sp); });
+    const host=S.els[i]; if(this.el.parentNode!==host) host.appendChild(this.el);
+    this.el.style.fontSize=parseFloat(getComputedStyle(host).fontSize)+"px";
+    this.i=i; this.k=k; this.now=-1; this.setLabel("");
+    this.place();
+    return true;
+  },
+  setLabel(kind){
+    const lb=this.el.lastChild; lb.className="lb"+(kind?" "+kind:"");
+    lb.innerHTML=kind?this.ICON[kind]+"<span>"+this.NAME[kind]+"</span>":"";
+  },
+  place(){
+    const e=this.el; if(!e||this.key==null||!e.parentNode) return;
+    const L=S.lines[this.i], w=L&&L.words[this.k]; if(!w) return;
+    const host=S.els[this.i], hb=host.getBoundingClientRect(), wb=w.el.getBoundingClientRect(), sb=SC.getBoundingClientRect();
+    const lw=e.firstChild; lw.style.fontSize="";
+    let W=e.offsetWidth; const room=host.clientWidth+8;
+    if(W>room){ lw.style.fontSize=(2.1*room/W).toFixed(2)+"em"; W=e.offsetWidth; }   // long words: shrink to fit the column
+    const H=e.offsetHeight, cx=wb.left-hb.left+wb.width/2;
+    const x=Math.max(-4,Math.min(hb.width-W+4,cx-W/2));
+    const below=wb.top-sb.top<H+12;   // no room above (top of the screen): show it under the word
+    const y=below? wb.bottom-hb.top+10 : wb.top-hb.top-H-8+parseFloat(getComputedStyle(host).fontSize)*0.35;
+    e.classList.toggle("below",below);
+    e.style.left=x+"px"; e.style.top=y+"px"; e.style.setProperty("--ax",Math.max(16,Math.min(W-16,cx-x))+"px");
+  },
+  update(i,t,ws){
+    if(!this.on||!Swara.active||!ws){ if(this.key!=null) this.hide(); return; }
+    // the word most recently started; hold it through short pauses
+    let k=-1; for(let q=0;q<ws.length;q++){ if(ws[q]&&ws[q][0]<=t) k=q; }
+    if(k<0||t>ws[k][1]+0.8){ if(this.key!=null) this.hide(); return; }
+    const key=i+":"+k;
+    if(key!==this.key){ this.key=key; if(!this.build(i,k)){ this.key=null; return; } requestAnimationFrame(()=>this.el&&this.el.classList.add("on")); }
+    const w=S.lines[i].words[k], [a,b]=ws[k], ak=w.ak;
+    let j=-1;
+    if(t<b){ const tot=ak.reduce((x,y)=>x+y.w,0); let acc=0; const f=(t-a)/Math.max(0.05,b-a)*tot;
+      for(j=0;j<ak.length-1;j++){ acc+=ak[j].w; if(f<acc) break; } }
+    if(j===this.now) return;
+    this.now=j;
+    const spans=this.el.firstChild.children;
+    for(let q=0;q<spans.length;q++) spans[q].classList.toggle("now",q===j);
+    const A=ak[j], kind=A&&A.kind;
+    this.setLabel(kind||"");
+    const L=S.lines[i];
+    this.heat(kind&&L.sw? (L.sw.find(x=>x.k===k&&x.m>=A.s&&x.m<A.e)||{}).el||null : null);
+  }
+};
+addEventListener("resize",()=>Lens.place());
 addEventListener("resize",()=>Swara.refresh());
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>Swara.refresh());
 
@@ -938,7 +1079,12 @@ const Music = {
     const a=this.el||new Audio(); this.el=a; a.preload="auto"; a.src=url; a.playbackRate=+$("rate").value;
     a.preservesPitch=true; a.mozPreservesPitch=true; a.webkitPreservesPitch=true;   // slowed down, the swaras keep their pitch
     const gen=this._gen=(this._gen||0)+1;   // a slow download for an earlier prayer must never swap the audio back
-    a.onerror=()=>toast("This recording couldn't be loaded. Check your connection, or choose the file from your device.",4500);
+    a.onerror=()=>{
+      const emb=document.getElementById("embeddedAudio-"+curText().id)||document.getElementById("embeddedAudio");
+      if(emb&&/^blob:/.test(a.src)&&!this._triedData){ this._triedData=true; a.src="data:"+(emb.dataset.mime||"audio/mpeg")+";base64,"+emb.textContent.trim(); return; }
+      toast(emb? "This preview window can't play the recording. Open the file in Safari or Chrome to hear it."
+               : "This recording couldn't be loaded. Check your connection, or choose the file from your device.",6000);
+    };
     a.onloadedmetadata=()=>{
       $("tDur").textContent=fmt(a.duration); $("seek").disabled=false;
       if(own){ const r=this.durationMatch(a.duration); if(r){ this.bind(r,key,name,own); toast("Recognised this recording: the words will light up as it plays.",3500); } }
@@ -996,7 +1142,7 @@ const Music = {
   unload(){
     if(this.el){this.el.pause();this.el.removeAttribute("src");}
     S.audioKey=null; S.times=[]; S.syncKey=null; this.pts=[]; S.rec=null; S.extraCues=[]; S.skip=new Set();
-    Pauses.clear(); Loop.set(false);
+    Pauses.clear(); Loop.set(false); Lens.reset();
     $("builtinBtn").hidden=!hasBuiltinAudio(); $("resetSync").hidden=true;
     $("fileName").textContent="No recording yet"; $("fileBtn").textContent="Choose recording";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=true); $("seek").disabled=true;
@@ -1030,9 +1176,9 @@ const Music = {
       const hit=this.lineAt(heard);
       if(hit){
         if(hit.i!==S.cur) setCur(hit.i);
-        if(hit.words){ fillWords(hit.i,heard,hit.words); Pauses.light(hit.i,heard,hit.words); }
-        else fill(hit.i,Math.min(1,(heard-hit.start)/Math.max(0.3,hit.end-hit.start)));
-      }
+        if(hit.words){ fillWords(hit.i,heard,hit.words); Pauses.light(hit.i,heard,hit.words); Lens.update(hit.i,heard,hit.words); }
+        else { fill(hit.i,Math.min(1,(heard-hit.start)/Math.max(0.3,hit.end-hit.start))); Lens.hide(); }
+      } else Lens.hide();
     }
     if(!a.paused) this.raf=requestAnimationFrame(()=>this.loop());
   },
@@ -1237,13 +1383,15 @@ function applySettings(){
   $("sScale").value=S.scale; $("sPause").value=S.pause; $("sSens").value=S.sens;
   $("sPauseV").textContent=S.pause.toFixed(2)+"s"; $("sLag").value=S.lag; $("sLagV").textContent=S.lag.toFixed(2)+"s"; $("sSensV").textContent=S.sens.toFixed(1)+"×";
   $("sBreaks").textContent=S.breaks?"On":"Off"; $("sBreaks").setAttribute("aria-pressed",S.breaks); $("sBreaks").classList.toggle("on",S.breaks);
-  [["sSwara",Swara.on],["sPauses",Pauses.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
+  document.body.classList.toggle("no-lens",!Lens.on);
+  [["sSwara",Swara.on],["sPauses",Pauses.on],["sLens",Lens.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
 }
 $("setBtn").onclick=()=>{ applySettings(); $("setSheet").hidden=false; };
 $("setClose").onclick=()=>$("setSheet").hidden=true;
 $("setSheet").addEventListener("click",e=>{ if(e.target.id==="setSheet") e.target.hidden=true; });
 $("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); Swara.refresh(); };
 $("sSwara").onclick=()=>{ Swara.on=!Swara.on; LS.set("swara",Swara.on); applySettings(); Swara.drawAll(); };
+$("sLens").onclick=()=>{ Lens.on=!Lens.on; LS.set("lens",Lens.on); if(!Lens.on) Lens.hide(); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
 $("sPauses").onclick=()=>{ Pauses.on=!Pauses.on; LS.set("pauses",Pauses.on); applySettings(); document.body.classList.toggle("no-pause",!Pauses.on); Swara.refresh(); };
 $("sPause").oninput=e=>{ S.pause=+e.target.value; LS.set("pause3",S.pause); applySettings(); };
 $("sLag").oninput=e=>{ S.lag=+e.target.value; LS.set("lag2",S.lag); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
