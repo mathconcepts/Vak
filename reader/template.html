@@ -18,15 +18,19 @@
   --f-text:"Tiro Devanagari Sanskrit","Noto Serif Devanagari","Sanskrit Text","Mangal",serif;
   --f-ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
   --scale:1.15;
+  --anu:#4fa3d8;   /* anudātta: low pitch */
+  --sv:#ef6a3c;    /* svarita: rising pitch */
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
+    --anu:#1f6fb0;--sv:#c2410c;
     --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
     --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
   }
 }
 :root[data-theme="light"]{
+  --anu:#1f6fb0;--sv:#c2410c;
   --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
   --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--ok:#3f7a2e;color-scheme:light;
 }
@@ -78,6 +82,19 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .steps li b{font-weight:700}
 .hint b{color:var(--fg);font-weight:500}
 .sec-h{font-family:var(--f-text);color:var(--sindoor);text-align:center;font-size:calc(1.25rem*var(--scale));margin:2.2rem 0 1rem;text-wrap:balance}
+/* Vedic swara guides: drawn in a layer over the text (letters are never split), so they work on every browser */
+.ln{position:relative}
+.sw{position:absolute;pointer-events:none;border-radius:2px;height:3px}
+.sw.anu{background:var(--anu)}
+.sw.sv{background:var(--sv)}
+.sw.dsv{background:var(--sv);height:2px;box-shadow:0 -4px 0 var(--sv)}
+.no-swara .sw{display:none}
+/* pauses heard in the recording */
+.pz{display:inline-block;color:var(--sindoor);opacity:.55;font-family:var(--f-ui);font-weight:700;font-size:.8em;margin:0 .05em 0 -.15em;transition:opacity .2s,transform .2s}
+.pz.long{letter-spacing:-.05em}
+.ln.cur .pz.now{opacity:1;transform:scale(1.5)}
+.no-pause .pz{display:none}
+.key{display:inline-block;width:1.4em;height:3px;border-radius:2px;vertical-align:middle;margin:0 .25em}
 .note{font-family:"Alegreya Sans","Tiro Devanagari Sanskrit","Noto Serif Devanagari",serif;font-style:italic;color:var(--dim);text-align:center;font-size:calc(.95rem*var(--scale));margin:1rem auto;max-width:34em}
 .sec-h::before,.sec-h::after{content:"✦";font-size:.6em;color:var(--dim);margin:0 .6em;vertical-align:.25em}
 .verse{margin:0 0 1.15rem;padding:.2rem 0}
@@ -246,9 +263,10 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
       <span class="lbl">Speed</span>
       <div class="row">
         <select id="rate" class="btn" aria-label="Playback speed">
-          <option value="0.75">0.75× slower</option><option value="0.9">0.9×</option><option value="1" selected>1× normal</option><option value="1.1">1.1×</option><option value="1.25">1.25× faster</option>
+          <option value="0.5">0.5× learn</option><option value="0.75">0.75× slower</option><option value="0.9">0.9×</option><option value="1" selected>1× normal</option><option value="1.1">1.1×</option><option value="1.25">1.25× faster</option>
         </select>
       </div>
+      <div class="row"><button class="switch" id="loopBtn" role="switch" aria-checked="false"><span class="trk"></span>Repeat this line</button></div>
       <span class="lbl">Recording</span>
       <div class="row">
         <span class="status grow" id="fileName">No recording yet</span>
@@ -295,6 +313,8 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     <div class="row"><h2 id="setH" class="grow">Reading settings</h2><button class="btn" id="setClose">Close</button></div>
     <div class="set-row"><span>Text size</span><input type="range" id="sScale" min="0.8" max="1.8" step="0.05"></div>
     <div class="set-row"><span>Show word breaks (‐)</span><button class="btn" id="sBreaks" aria-pressed="true">On</button></div>
+    <div class="set-row vedic"><span>Swara guides: <span class="key" style="background:var(--anu)"></span>anudātta <span class="key" style="background:var(--sv)"></span>svarita</span><button class="btn" id="sSwara" aria-pressed="true">On</button></div>
+    <div class="set-row vedic"><span>Pause marks from the recording (’)</span><button class="btn" id="sPauses" aria-pressed="true">On</button></div>
     <h3>Recite mode</h3>
     <div class="set-row"><span>Pause that confirms a line end</span><input type="range" id="sPause" min="0.08" max="1" step="0.02"><span class="status" id="sPauseV"></span></div>
     <div class="set-row"><span>Microphone sensitivity</span><input type="range" id="sSens" min="1.6" max="6" step="0.1"><span class="status" id="sSensV"></span></div>
@@ -317,6 +337,12 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
       <li>The word in gold is the word being sung. The page moves by itself.</li>
       <li>Tap any line to jump there. Drag the slider to move through the recording.</li>
       <li>Faded lines are not sung in this recording.</li>
+    </ul>
+    <h3 class="vedic">Swaras and pauses (Vedic texts)</h3>
+    <ul class="vedic">
+      <li><b>Blue bar under</b> a syllable: anudātta, sung low. <b>Orange bar over</b>: svarita, the rise. <b>Double bar</b>: dīrgha svarita. Unmarked syllables are udātta.</li>
+      <li><b>’</b> marks a pause the reciter takes in this recording. It glows while the pause is happening.</li>
+      <li><b>Tap any word</b> to hear it from the recording. <b>More</b> → <b>Repeat this line</b> plays one line again and again; choose <b>0.5×</b> speed to learn slowly. The pitch stays true when slowed.</li>
     </ul>
     <h3>Chant on your own</h3>
     <ul>
@@ -461,6 +487,9 @@ function render(){
     });
   });
   S.cur=Math.min(LS.get("pos."+t.id,0),S.lines.length-1);
+  Swara.active=Swara.has(t);
+  document.querySelectorAll(".vedic").forEach(x=>x.hidden=!Swara.active);
+  if(S.rec&&S.audioKey) Pauses.mark(); else Swara.refresh();
   paintAll(); setCur(S.cur,{scroll:"instant"});
   updateHint();
 }
@@ -548,6 +577,99 @@ $("asBtn").onclick=()=>{
 };
 paintSwitch();
 
+/* ---------- Vedic swaras: guides drawn over the text, measured from the browser's own layout ---------- */
+const Swara = {
+  KIND: {"॒":"anu","॑":"sv","᳚":"dsv"},
+  on: LS.get("swara",true),
+  has(t){ return /[॒॑᳚]/.test(JSON.stringify(t.sections)); },
+  // start of the syllable that carries the mark at index m: back over signs, then over consonant+virama links
+  start(s,m){
+    let k=m-1;
+    const sign=c=>/[ऀ-ःऺ-ौॎॏ॑-ॗॢॣ᳐-᳿꣠-ꣿ]/.test(c);
+    while(k>0&&sign(s[k])) k--;
+    while(k>1&&s[k-1]==="्") k-=2;
+    return Math.max(0,k);
+  },
+  drawLine(i){
+    const el=S.els[i]; if(!el) return;
+    el.querySelectorAll(".sw").forEach(x=>x.remove());
+    if(!this.on||!this.active) return;
+    const base=el.getBoundingClientRect(), out=[];
+    const fs=parseFloat(getComputedStyle(el).fontSize)||20;
+    S.lines[i].words.forEach(w=>{
+      const node=w.el.firstChild; if(!node||node.nodeType!==3) return;
+      const s=node.data;
+      for(let m=0;m<s.length;m++){
+        const kind=this.KIND[s[m]]; if(!kind) continue;
+        const r=document.createRange(); r.setStart(node,this.start(s,m)); r.setEnd(node,m+1);
+        const rs=r.getClientRects(); if(!rs.length) continue;
+        const b=rs[0];
+        // the glyph box is taller than the ink: place guides just outside the letters
+        const top=kind==="anu"? b.bottom-base.top-fs*0.32 : b.top-base.top+fs*0.18;
+        out.push([kind,b.left-base.left+fs*0.06,top,Math.max(4,b.width-fs*0.12)]);
+      }
+    });
+    out.forEach(([k,x,y,wd])=>{ const d=document.createElement("i"); d.className="sw "+k; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=wd+"px"; el.appendChild(d); });
+  },
+  drawAll(){
+    document.body.classList.toggle("no-swara",!this.on);
+    if(!this.active){ S.els.forEach(el=>el.querySelectorAll(".sw").forEach(x=>x.remove())); return; }
+    for(let i=0;i<S.els.length;i++) this.drawLine(i);
+  },
+  refresh(){ clearTimeout(this._t); this._t=setTimeout(()=>this.drawAll(),60); }
+};
+addEventListener("resize",()=>Swara.refresh());
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>Swara.refresh());
+
+/* ---------- pauses heard in the recording (the recording is the authority) ---------- */
+const Pauses = {
+  on: LS.get("pauses",true),
+  SHORT: 0.35, LONG: 0.9,
+  clear(){ document.querySelectorAll(".pz").forEach(x=>x.remove()); S.lines.forEach(L=>L.pz=null); },
+  mark(){
+    this.clear();
+    document.body.classList.toggle("no-pause",!this.on);
+    if(!S.rec||!S.rec.words||!Swara.active) { Swara.refresh(); return; }   // pause marks are for Vedic texts
+    S.lines.forEach((L,i)=>{
+      const ws=S.rec.words[i]; if(!ws) return;
+      L.pz=[];
+      for(let k=0;k<ws.length;k++){
+        if(!ws[k]) continue;
+        let n=k+1; while(n<ws.length&&!ws[n]) n++;
+        if(n>=ws.length) break;
+        const gap=ws[n][0]-ws[k][1];
+        if(gap<this.SHORT) continue;
+        const z=document.createElement("span"); z.className="pz"+(gap>=this.LONG?" long":"");
+        z.textContent=gap>=this.LONG?"’’":"’"; z.title="Pause in the recording ("+gap.toFixed(1)+" s)";
+        // after the last non-word token that follows word k (dandas stay attached to their word)
+        let anchor=L.words[k].el; for(let q=k+1;q<n;q++) anchor=L.words[q].el;
+        anchor.parentNode.insertBefore(z,anchor.nextSibling);
+        L.pz.push({el:z,k,n});
+      }
+    });
+    Swara.refresh();
+  },
+  light(i,t,ws){
+    const L=S.lines[i]; if(!L||!L.pz) return;
+    L.pz.forEach(p=>{ const a=ws[p.k],b=ws[p.n]; p.el.classList.toggle("now",!!(a&&b&&t>=a[1]&&t<b[0])); });
+  }
+};
+
+/* ---------- repeat one line (practice) ---------- */
+const Loop = {
+  line:null,
+  set(on){ this.line=on?S.cur:null; $("loopBtn").setAttribute("aria-checked",!!on); if(on) toast("Repeating this line. Tap another line to repeat that one.",2600); },
+  check(heard){
+    if(this.line==null||!Music.el||S.times[this.line]==null) return;
+    const p=Music.pts; let idx=-1;
+    for(let k=0;k<p.length;k++) if(p[k][1]===this.line){ idx=k; break; }
+    if(idx<0) return;
+    const start=p[idx][0], end=idx+1<p.length?p[idx+1][0]:Music.el.duration;
+    if(heard>=end-0.05||heard<start-1){ Music.el.currentTime=start+S.lag; Music.holdUntil=performance.now()+120; }
+  }
+};
+$("loopBtn").onclick=()=>Loop.set(Loop.line==null);
+
 /* line clicks */
 $("text").addEventListener("click",e=>{
   const el=e.target.closest(".ln"); if(!el) return;
@@ -556,6 +678,12 @@ $("text").addEventListener("click",e=>{
   if(S.mode==="music"){
     if(Tap.on) return;
     if(Music.adjusting&&Music.el&&!isNaN(Music.el.duration)){ Music.mark(i); return; }
+    if(Loop.line!=null) Loop.line=i;
+    const wEl=e.target.closest(".w"), ws=Music.wordsFor(i);
+    if(wEl&&ws&&Music.el){
+      let k=-1; S.lines[i].words.forEach((w,q)=>{ if(w.el===wEl) k=q; });
+      if(k>=0&&ws[k]){ Music.el.currentTime=Math.max(0,ws[k][0]-0.08); Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); if(Music.el.paused) Music.el.play().catch(()=>{}); return; }
+    }
     if(S.times[i]!=null&&Music.el){ Music.el.currentTime=S.times[i]+0.01; Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); return; }
     setCur(i); return;
   }
@@ -808,6 +936,7 @@ const Music = {
     if(this.el){ this.el.pause(); }
     this.url=own?url:null;
     const a=this.el||new Audio(); this.el=a; a.preload="auto"; a.src=url; a.playbackRate=+$("rate").value;
+    a.preservesPitch=true; a.mozPreservesPitch=true; a.webkitPreservesPitch=true;   // slowed down, the swaras keep their pitch
     const gen=this._gen=(this._gen||0)+1;   // a slow download for an earlier prayer must never swap the audio back
     a.onerror=()=>toast("This recording couldn't be loaded. Check your connection, or choose the file from your device.",4500);
     a.onloadedmetadata=()=>{
@@ -848,6 +977,7 @@ const Music = {
     $("resetSync").hidden=!(rec&&d);
     $("builtinBtn").hidden=!hasBuiltinAudio()||!!rec;
     this.index();
+    Pauses.mark();
     LS.set("lastAudio."+S.textId,{key:own?key:S.audioKey,name:S.audioName,builtin:!!rec&&!own});   // own files are kept under their own key
     $("fileName").textContent=S.audioName; $("fileBtn").textContent=hasBuiltinAudio()?"Use my own file":"Change";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=false);
@@ -866,6 +996,7 @@ const Music = {
   unload(){
     if(this.el){this.el.pause();this.el.removeAttribute("src");}
     S.audioKey=null; S.times=[]; S.syncKey=null; this.pts=[]; S.rec=null; S.extraCues=[]; S.skip=new Set();
+    Pauses.clear(); Loop.set(false);
     $("builtinBtn").hidden=!hasBuiltinAudio(); $("resetSync").hidden=true;
     $("fileName").textContent="No recording yet"; $("fileBtn").textContent="Choose recording";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=true); $("seek").disabled=true;
@@ -894,11 +1025,12 @@ const Music = {
     $("tNow").textContent=fmt(t);
     if(!this.seeking&&a.duration) $("seek").value=Math.round(t/a.duration*1000);
     const heard=Math.max(0,t-S.lag);
+    if(!a.paused) Loop.check(heard);
     if(!Tap.on&&performance.now()>=(this.holdUntil||0)){
       const hit=this.lineAt(heard);
       if(hit){
         if(hit.i!==S.cur) setCur(hit.i);
-        if(hit.words) fillWords(hit.i,heard,hit.words);
+        if(hit.words){ fillWords(hit.i,heard,hit.words); Pauses.light(hit.i,heard,hit.words); }
         else fill(hit.i,Math.min(1,(heard-hit.start)/Math.max(0.3,hit.end-hit.start)));
       }
     }
@@ -1105,11 +1237,14 @@ function applySettings(){
   $("sScale").value=S.scale; $("sPause").value=S.pause; $("sSens").value=S.sens;
   $("sPauseV").textContent=S.pause.toFixed(2)+"s"; $("sLag").value=S.lag; $("sLagV").textContent=S.lag.toFixed(2)+"s"; $("sSensV").textContent=S.sens.toFixed(1)+"×";
   $("sBreaks").textContent=S.breaks?"On":"Off"; $("sBreaks").setAttribute("aria-pressed",S.breaks); $("sBreaks").classList.toggle("on",S.breaks);
+  [["sSwara",Swara.on],["sPauses",Pauses.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
 }
 $("setBtn").onclick=()=>{ applySettings(); $("setSheet").hidden=false; };
 $("setClose").onclick=()=>$("setSheet").hidden=true;
 $("setSheet").addEventListener("click",e=>{ if(e.target.id==="setSheet") e.target.hidden=true; });
-$("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); };
+$("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); Swara.refresh(); };
+$("sSwara").onclick=()=>{ Swara.on=!Swara.on; LS.set("swara",Swara.on); applySettings(); Swara.drawAll(); };
+$("sPauses").onclick=()=>{ Pauses.on=!Pauses.on; LS.set("pauses",Pauses.on); applySettings(); document.body.classList.toggle("no-pause",!Pauses.on); Swara.refresh(); };
 $("sPause").oninput=e=>{ S.pause=+e.target.value; LS.set("pause3",S.pause); applySettings(); };
 $("sLag").oninput=e=>{ S.lag=+e.target.value; LS.set("lag2",S.lag); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
 $("sSens").oninput=e=>{ S.sens=+e.target.value; LS.set("sens",S.sens); applySettings(); };

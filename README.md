@@ -32,6 +32,10 @@ Put the prayer on a screen and let it keep the place for her:
   - Slow the recording down.
   - Make the text bigger.
   - Fix the timing if a Bluetooth speaker runs late.
+- **For Vedic chanting (Sri Rudram):**
+  - Swara guides: a **blue line under** each anudātta (low) syllable, an **orange stroke over** each svarita (rising) one, and a **double stroke** for dīrgha svarita.
+  - Pause marks **’** and **’’** show where the reciter pauses, taken from the recording itself.
+  - Tap a word to hear it. "Repeat this line" practises one line. **0.5×** slows the voice without changing its pitch.
 
 No app to install, no sign-in, no ads, no tracking.
 
@@ -62,7 +66,7 @@ Then Studio builds the Reader file.
 | Reader: Music and Recite modes, word-by-word gold, auto-scroll, works offline and on older iPads | **Together mode:** family in different cities follow one leader on the same word |
 | Studio: text check, timing, listening check, approval, build | **Sankalpa count:** a family total of parayanams, with no server |
 | **Lalitā Sahasranāma** pack, all checks passed | **Other scripts:** Telugu, Kannada, Tamil |
-| **Sri Rudram: Namakam and Chamakam** with swara marks (anudātta ॒, svarita ॑, dīrgha svarita ᳚), all checks passed | **Chamakam anuvākas 2–11**, once a full recording is added |
+| **Sri Rudram: Namakam and Chamakam** with swara marks (anudātta ॒, svarita ॑, dīrgha svarita ᳚), all checks passed | |
 | **Krishna Yajurveda Sandhyavandanam** pack, waiting for its text and recording | **YouTube playback**, for videos whose owners allow embedding |
 
 ## For developers
