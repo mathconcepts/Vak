@@ -3,8 +3,8 @@
   "title": "श्रीरुद्रप्रश्नः · नमकम्",
   "sub": "Sri Rudram Namakam · Krishna Yajurveda",
   "source": "Text: <a href=\"https://sanskritdocuments.org/doc_veda/rudra.html\" target=\"_blank\" rel=\"noopener\">sanskritdocuments.org</a> (Vedic svara edition, encoded and proofread by Rajagopal Iyer and Rekha Venkatesh). Taittirīya Saṁhitā 4.5.",
-  "licence": "private",
-  "version": 3,
+  "licence": "public",
+  "version": 4,
   "created": "2026-11-10T07:59:27+00:00",
   "order": "0-31,33-209,211-215",
   "anchors": {},
@@ -21,6 +21,10 @@
     {
       "at": "2026-11-10T08:02:25+00:00",
       "note": "This recording chants 'shambhave namah' at the very start (after 'om sri gurubhyo namah hari om'), not before anuvaka 2, and goes from 'mrityave svaha' straight to 'pranananam granthirasi', skipping 'om namo bhagavate rudraya vishnave mrityurme pahi'. Those two lines (32, 173) are marked not-in-recording."
+    },
+    {
+      "at": "2026-11-10",
+      "note": "Giri states the Namakam and Chamakam recordings are not copyrighted and may be published on the site."
     }
   ],
   "gates": {
@@ -94,13 +98,13 @@
     "sha256": "e036ea585f17c33a66fdb583e0ae50513848b53d89750793f4b3394dc0f7e486",
     "mime": "audio/mp4"
   },
-  "updated": "2026-11-10T08:29:09+00:00",
+  "updated": "2026-11-10T09:56:28+00:00",
   "bite": "Press play. Follow the light. Chant with the swaras.",
   "bite_end": "Every syllable, in step with the recitation.",
   "build": {
-    "version": 3,
-    "at": "2026-11-10T08:29:09+00:00",
-    "hash": "2c6fe2db4d7f613b",
+    "version": 4,
+    "at": "2026-11-10T09:56:28+00:00",
+    "hash": "651254c66a756c34",
     "timed": true
   }
 }

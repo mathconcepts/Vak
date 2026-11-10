@@ -3,10 +3,10 @@
   "title": "चमकप्रश्नः · चमकम्",
   "sub": "Sri Rudram Chamakam · Krishna Yajurveda",
   "source": "Text: <a href=\"https://sanskritdocuments.org/doc_veda/chamaka.html\" target=\"_blank\" rel=\"noopener\">sanskritdocuments.org</a> (Vedic svara edition, encoded and proofread by Rajagopal Iyer and Rekha Venkatesh). Taittirīya Saṁhitā 4.7.",
-  "licence": "private",
-  "version": 4,
+  "licence": "public",
+  "version": 5,
   "created": "2026-11-10T07:59:27+00:00",
-  "order": "0-10",
+  "order": null,
   "anchors": {},
   "judge": {
     "n": 30,
@@ -17,6 +17,10 @@
     {
       "at": "2026-11-10T07:59:27+00:00",
       "note": "Text copied verbatim (words and swara marks) from the sanskritdocuments.org Vedic svara edition; only line breaks were chosen (at dandas, between namo-pairs, and every 4th \"me\" in Chamakam). Recording starts with a short invocation (om sri gurubhyo namah ... hari om) that is not in the text."
+    },
+    {
+      "at": "2026-11-10",
+      "note": "Recording replaced with the full Chamakam (T3.2, 9:39). Giri states the Namakam and Chamakam recordings are not copyrighted and may be published on the site."
     }
   ],
   "gates": {
@@ -34,45 +38,59 @@
     },
     "align": {
       "ok": true,
-      "low_lines": [],
-      "low_frac": 0.0,
-      "median_conf": 0.839,
-      "at": "2026-11-10T08:12:05+00:00",
-      "lines": 11,
-      "not_in_recording": 86,
+      "low_lines": [
+        10,
+        20,
+        40,
+        53,
+        78
+      ],
+      "low_frac": 0.052,
+      "median_conf": 0.841,
+      "at": "2026-11-10T09:50:13+00:00",
+      "lines": 97,
+      "not_in_recording": 0,
       "region": [
-        1.26,
-        69.28
+        1.22,
+        571.04
       ]
     },
     "judge": {
       "ok": true,
-      "rate": 1.0,
+      "rate": 0.767,
       "bar": 0.65,
-      "failed_lines": [],
-      "at": "2026-11-10T08:29:00+00:00",
-      "passed": 8,
-      "total": 8,
+      "failed_lines": [
+        14,
+        18,
+        35,
+        41,
+        49,
+        64,
+        84
+      ],
+      "at": "2026-11-10T09:56:28+00:00",
+      "passed": 23,
+      "total": 30,
       "seed": 1
     }
   },
   "recording": {
-    "file": "original.mp3",
-    "original_name": "Chamakam_1.mp3",
+    "file": "original.m4a",
+    "original_name": "T3.2. Chamakam.m4a",
     "label": "Recording",
-    "title": "Chamakam · anuvāka 1",
-    "bytes": 1132478,
-    "duration": 72.0,
-    "sha256": "aa6e7a256402a78115256fe8650f3033f38ea204bd93b21124c5479569573e44",
-    "mime": "audio/mpeg"
+    "title": "Chamakam",
+    "bytes": 16596203,
+    "duration": 579.34,
+    "sha256": "e1f70163da88b5f14e4befbdb925917dcd9430224bfd63008537df61c2814891",
+    "mime": "audio/mp4"
   },
-  "updated": "2026-11-10T08:29:09+00:00",
+  "updated": "2026-11-10T09:56:28+00:00",
   "bite": "Press play. Follow the light. Chant with the swaras.",
   "bite_end": "Every syllable, in step with the recitation.",
   "build": {
-    "version": 4,
-    "at": "2026-11-10T08:29:09+00:00",
-    "hash": "c510d052166e9e91",
+    "version": 5,
+    "at": "2026-11-10T09:56:28+00:00",
+    "hash": "70fe121d985a06af",
     "timed": true
   }
 }
