@@ -86,12 +86,19 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 /* Vedic swara guides: drawn in a layer over the text (letters are never split), so they work on every browser */
 .ln{position:relative;isolation:isolate}
 .ln.cur{z-index:2}
-.vedic-on .ln{line-height:2.25}
+.vedic-on .ln{line-height:2.25;transform-origin:0 50%;transition:color .25s,background .25s,opacity .4s,transform .4s cubic-bezier(.2,.8,.2,1)}
+.vedic-on .ln.cur{transform:scale(1.045)}
+@media (max-width:600px){.vedic-on .ln.cur{transform:scale(1.015)}}
+.vedic-on.playing .ln:not(.cur){opacity:.5}
+.vedic-on.playing .ln.cur{box-shadow:0 8px 28px rgba(0,0,0,.10)}
+.scroller{overflow-x:hidden}
 /* a soft tint behind the whole syllable, plus a shape: line under = low, line over = rising, double = long */
 .sw{position:absolute;pointer-events:none;z-index:-1;border-radius:.3em;box-sizing:border-box;transition:background-color .2s,box-shadow .2s}
-.sw.anu{background:var(--anu-bg);border-bottom:.13em solid var(--anu)}
-.sw.sv{background:var(--sv-bg);border-top:.13em solid var(--sv)}
-.sw.dsv{background:var(--sv-bg);border-top:.36em double var(--sv)}
+.sw.anu{color:var(--anu);background:var(--anu-bg);border-bottom:.13em solid var(--anu)}
+.sw.sv{color:var(--sv);background:var(--sv-bg);border-top:.13em solid var(--sv)}
+.sw.dsv{color:var(--sv);background:var(--sv-bg);border-top:.36em double var(--sv)}
+.sw.hot{animation:swPulse .75s ease-out}
+@keyframes swPulse{0%{box-shadow:0 0 0 0 currentColor}100%{box-shadow:0 0 0 .5em rgba(0,0,0,0)}}
 .past .sw{opacity:.55}
 .sw.hot.anu{background:var(--anu-hot);box-shadow:0 0 0 2px var(--anu)}
 .sw.hot.sv,.sw.hot.dsv{background:var(--sv-hot);box-shadow:0 0 0 2px var(--sv)}
@@ -109,14 +116,26 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .lens .ak.anu{color:var(--anu);background:var(--anu-bg);border-bottom:3px solid var(--anu)}
 .lens .ak.sv{color:var(--sv);background:var(--sv-bg);border-top:3px solid var(--sv)}
 .lens .ak.dsv{color:var(--sv);background:var(--sv-bg);border-top:7px double var(--sv)}
-.lens .ak.now{transform:scale(1.2);transform-origin:50% 60%;transition:transform .16s cubic-bezier(.3,1.5,.5,1)}
+.lens .ak{transition:transform .24s cubic-bezier(.34,1.56,.64,1),color .2s;transform-origin:50% 60%}
+.lens .ak.now{transform:scale(1.28)}
+.lens .ak.now.anu{transform:translateY(.16em) scale(1.28)}
+.lens .ak.now.sv{transform:translateY(-.16em) scale(1.28)}
+.lens .ak.now.dsv{transform:translateY(-.2em) scale(1.34)}
+.lens .lw.enter{animation:lwIn .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lwIn{from{opacity:0;transform:translateX(.4em)}to{opacity:1;transform:none}}
+.lens .lb span{animation:lbIn .22s ease-out both}
+@keyframes lbIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.lens .pc{position:relative;height:20px;margin:0 0 .15em}
+.lens .pc svg{position:absolute;left:0;top:0;overflow:visible}
+.lens .pd{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--haldi);
+  box-shadow:0 0 0 3px var(--panel);opacity:0;transition:transform .24s cubic-bezier(.34,1.56,.64,1),opacity .15s}
 .lens .ak.now:not(.anu):not(.sv):not(.dsv){color:var(--haldi)}
 .lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;display:flex;align-items:center;justify-content:center;gap:.4em;color:var(--muted)}
 .lens .lb svg{width:1.6em;height:1em;flex:none}
 .lens .lb.anu{color:var(--anu)}
 .lens .lb.sv,.lens .lb.dsv{color:var(--sv)}
 .no-lens .lens{display:none}
-@media (prefers-reduced-motion: reduce){.lens .ak.now{transform:none}}
+@media (prefers-reduced-motion: reduce){.lens .ak.now,.lens .ak.now.anu,.lens .ak.now.sv,.lens .ak.now.dsv,.vedic-on .ln.cur{transform:none}.lens .lw.enter,.lens .lb span,.sw.hot{animation:none}}
 /* legend card for Vedic texts */
 .swkey{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;
   padding:.9rem 1rem;margin:1rem 0 1.5rem;font-family:var(--f-ui);font-size:1rem;color:var(--muted)}
@@ -639,7 +658,7 @@ const Swara = {
     el.querySelectorAll(".sw").forEach(x=>x.remove());
     const L=S.lines[i]; L.sw=[];
     if(!this.on||!this.active) return;
-    const base=el.getBoundingClientRect(), out=[];
+    const base=el.getBoundingClientRect(), out=[], z=(base.width/el.offsetWidth)||1;
     const fs=parseFloat(getComputedStyle(el).fontSize)||20;
     L.words.forEach((w,k)=>{
       const node=w.el.firstChild; if(!node||node.nodeType!==3) return;
@@ -649,8 +668,8 @@ const Swara = {
         const r=document.createRange(); r.setStart(node,this.start(s,m)); r.setEnd(node,m+1);
         const rs=r.getClientRects(); if(!rs.length) continue;
         const b=rs[0];
-        // the glyph box is taller than the ink: trim it to the letters and their swara marks
-        out.push([kind,b.left-base.left-fs*0.05,b.top-base.top-fs*0.3,b.width+fs*0.1,b.height+fs*0.62,k,m]);
+        // the text box is one em tall; the swara marks sit just outside it
+        out.push([kind,(b.left-base.left)/z-fs*0.05,(b.top-base.top)/z-fs*0.3,b.width/z+fs*0.1,b.height/z+fs*0.62,k,m]);
       }
     });
     out.forEach(([kd,x,y,wd,h,k,m])=>{ const d=document.createElement("i"); d.className="sw "+kd; d.style.left=x+"px"; d.style.top=y+"px"; d.style.width=wd+"px"; d.style.height=h+"px"; el.appendChild(d); L.sw.push({k,m,el:d}); });
@@ -710,8 +729,9 @@ const Lens = {
     const L=S.lines[i], w=L.words[k], node=w.el.firstChild; if(!node||node.nodeType!==3) return false;
     const s=node.data; w.ak=w.ak||Akshara.split(s);
     if(!this.el){ this.el=document.createElement("div"); this.el.className="lens"; this.el.setAttribute("aria-hidden","true");
-      this.el.innerHTML='<div class="lw"></div><div class="lb"></div>'; }
-    const lw=this.el.firstChild; lw.textContent="";
+      this.el.innerHTML='<div class="lw"></div><div class="pc"><svg></svg><i class="pd"></i></div><div class="lb"></div>'; }
+    const lw=this.el.firstChild; lw.textContent=""; this.ak=w.ak;
+    lw.classList.remove("enter"); void lw.offsetWidth; lw.classList.add("enter");
     w.ak.forEach(a=>{ const sp=document.createElement("span"); sp.className="ak"+(a.kind?" "+a.kind:""); sp.textContent=s.slice(a.s,a.e); lw.appendChild(sp); });
     const host=S.els[i]; if(this.el.parentNode!==host) host.appendChild(this.el);
     this.el.style.fontSize=parseFloat(getComputedStyle(host).fontSize)+"px";
@@ -727,15 +747,38 @@ const Lens = {
     const e=this.el; if(!e||this.key==null||!e.parentNode) return;
     const L=S.lines[this.i], w=L&&L.words[this.k]; if(!w) return;
     const host=S.els[this.i], hb=host.getBoundingClientRect(), wb=w.el.getBoundingClientRect(), sb=SC.getBoundingClientRect();
+    const z=(hb.width/host.offsetWidth)||1;   // the line being sung is zoomed; work in its own units
     const lw=e.firstChild; lw.style.fontSize="";
     let W=e.offsetWidth; const room=host.clientWidth+8;
     if(W>room){ lw.style.fontSize=(2.1*room/W).toFixed(2)+"em"; W=e.offsetWidth; }   // long words: shrink to fit the column
-    const H=e.offsetHeight, cx=wb.left-hb.left+wb.width/2;
-    const x=Math.max(-4,Math.min(hb.width-W+4,cx-W/2));
-    const below=wb.top-sb.top<H+12;   // no room above (top of the screen): show it under the word
-    const y=below? wb.bottom-hb.top+10 : wb.top-hb.top-H-8+parseFloat(getComputedStyle(host).fontSize)*0.35;
+    const H=e.offsetHeight, cx=(wb.left-hb.left+wb.width/2)/z;
+    const x=Math.max(-4,Math.min(host.offsetWidth-W+4,cx-W/2));
+    const below=wb.top-sb.top<H*z+12;   // no room above (top of the screen): show it under the word
+    const y=below? (wb.bottom-hb.top)/z+10 : (wb.top-hb.top)/z-H-8+parseFloat(getComputedStyle(host).fontSize)*0.35;
     e.classList.toggle("below",below);
     e.style.left=x+"px"; e.style.top=y+"px"; e.style.setProperty("--ax",Math.max(16,Math.min(W-16,cx-x))+"px");
+    this.contour();
+  },
+  // pitch line from the swara marks: low (anudātta), middle (unmarked), high (svarita)
+  LEVEL: {anu:1, sv:0, dsv:0},
+  contour(){
+    const e=this.el, lw=e.firstChild, pc=e.children[1], svg=pc.firstChild, spans=lw.children, ak=this.ak||[];
+    const Wd=pc.clientWidth, Hd=20, pts=[];
+    for(let q=0;q<spans.length&&q<ak.length;q++){
+      const sp=spans[q], lv=ak[q].kind in this.LEVEL? this.LEVEL[ak[q].kind] : 0.5;
+      pts.push([sp.offsetLeft+sp.offsetWidth/2-pc.offsetLeft, 3+lv*14, ak[q].kind]);
+    }
+    this.pts=pts;
+    const col=k=>k==="anu"?"var(--anu)":k?"var(--sv)":"var(--dim)";
+    svg.setAttribute("width",Wd); svg.setAttribute("height",Hd);
+    svg.innerHTML=(pts.length>1?'<polyline points="'+pts.map(p=>p[0].toFixed(1)+","+p[1]).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>':"")+
+      pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1]+'" r="'+(p[2]?3.6:2.4)+'" fill="'+col(p[2])+'"/>').join("");
+    this.dot(this.now);
+  },
+  dot(j){
+    const d=this.el&&this.el.querySelector(".pd"), p=this.pts&&this.pts[j]; if(!d) return;
+    if(!p){ d.style.opacity="0"; return; }
+    d.style.opacity="1"; d.style.transform="translate("+p[0].toFixed(1)+"px,"+p[1]+"px)";
   },
   update(i,t,ws){
     if(!this.on||!Swara.active||!ws){ if(this.key!=null) this.hide(); return; }
@@ -752,6 +795,7 @@ const Lens = {
     this.now=j;
     const spans=this.el.firstChild.children;
     for(let q=0;q<spans.length;q++) spans[q].classList.toggle("now",q===j);
+    this.dot(j);
     const A=ak[j], kind=A&&A.kind;
     this.setLabel(kind||"");
     const L=S.lines[i];
@@ -823,7 +867,7 @@ $("text").addEventListener("click",e=>{
     const wEl=e.target.closest(".w"), ws=Music.wordsFor(i);
     if(wEl&&ws&&Music.el){
       let k=-1; S.lines[i].words.forEach((w,q)=>{ if(w.el===wEl) k=q; });
-      if(k>=0&&ws[k]){ Music.el.currentTime=Math.max(0,ws[k][0]-0.08); Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); if(Music.el.paused) Music.el.play().catch(()=>{}); return; }
+      if(k>=0&&ws[k]){ Music.el.currentTime=Math.max(0,ws[k][0]-0.08); Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); if(Music.el.paused) Music.tryPlay(); return; }
     }
     if(S.times[i]!=null&&Music.el){ Music.el.currentTime=S.times[i]+0.01; Music.holdUntil=performance.now()+S.lag*1000+150; setCur(i); return; }
     setCur(i); return;
@@ -1082,8 +1126,7 @@ const Music = {
     a.onerror=()=>{
       const emb=document.getElementById("embeddedAudio-"+curText().id)||document.getElementById("embeddedAudio");
       if(emb&&/^blob:/.test(a.src)&&!this._triedData){ this._triedData=true; a.src="data:"+(emb.dataset.mime||"audio/mpeg")+";base64,"+emb.textContent.trim(); return; }
-      toast(emb? "This preview window can't play the recording. Open the file in Safari or Chrome to hear it."
-               : "This recording couldn't be loaded. Check your connection, or choose the file from your device.",6000);
+      toast(emb? this.why() : "This recording couldn't be loaded. Check your connection, or choose the file from your device.",7000);
     };
     a.onloadedmetadata=()=>{
       $("tDur").textContent=fmt(a.duration); $("seek").disabled=false;
@@ -1100,8 +1143,8 @@ const Music = {
         }).catch(()=>{ if(this._gen===gen) $("fileName").textContent=name; }).finally(()=>{ this._fetching=false; });
       }
     };
-    a.onplay=()=>{ $("playBtn").textContent="Pause"; keepAwake(true); this.loop(); };
-    a.onpause=()=>{ $("playBtn").textContent="Play"; cancelAnimationFrame(this.raf); };
+    a.onplay=()=>{ $("playBtn").textContent="Pause"; document.body.classList.add("playing"); keepAwake(true); this.loop(); };
+    a.onpause=()=>{ $("playBtn").textContent="Play"; document.body.classList.remove("playing"); cancelAnimationFrame(this.raf); };
     a.onended=()=>{ if(Tap.on) Tap.finish(true); };
     this.bind(this.builtinFor(key,size),key,name,own);
   },
@@ -1142,7 +1185,7 @@ const Music = {
   unload(){
     if(this.el){this.el.pause();this.el.removeAttribute("src");}
     S.audioKey=null; S.times=[]; S.syncKey=null; this.pts=[]; S.rec=null; S.extraCues=[]; S.skip=new Set();
-    Pauses.clear(); Loop.set(false); Lens.reset();
+    Pauses.clear(); Loop.set(false); Lens.reset(); document.body.classList.remove("playing");
     $("builtinBtn").hidden=!hasBuiltinAudio(); $("resetSync").hidden=true;
     $("fileName").textContent="No recording yet"; $("fileBtn").textContent="Choose recording";
     ["playBtn","tapAlongBtn","adjustBtn"].forEach(id=>$(id).disabled=true); $("seek").disabled=true;
@@ -1211,7 +1254,23 @@ $("fileIn").onchange=async e=>{
   if(!ok) toast("Loaded. This browser won't keep the file, so you'll choose it again next time. Your timings are saved.",4200);
   e.target.value="";
 };
-$("playBtn").onclick=()=>{ const a=Music.el; if(!a) return; a.paused?a.play().catch(()=>toast("Couldn't play this file. Try an MP3 or M4A.")):a.pause(); };
+Music.why=function(){
+  let framed=false; try{ framed=window.self!==window.top; }catch(e){ framed=true; }
+  if(framed) return "This preview window can't play audio. Open the file in Safari or Chrome (double-click it in Finder or Files) to hear the recording.";
+  const er=this.el&&this.el.error;
+  if(er&&(er.code===3||er.code===4)) return "This browser can't play this recording. Open it in Safari or Chrome.";
+  return "The recording didn't start. Please press Play again.";
+};
+Music.tryPlay=function(again){
+  const a=this.el; if(!a) return;
+  a.play().catch(e=>{
+    const n=e&&e.name;
+    if(n==="AbortError"&&!again){ a.addEventListener("canplay",()=>this.tryPlay(true),{once:true}); return; }   // the recording was still being swapped in
+    if(n==="NotAllowedError"&&!(window.self!==window.top)){ toast("Press Play once more to start the recording.",3500); return; }
+    toast(this.why(),7000);
+  });
+};
+$("playBtn").onclick=()=>{ const a=Music.el; if(!a) return; a.paused?Music.tryPlay():a.pause(); };
 $("rate").onchange=e=>{ if(Music.el) Music.el.playbackRate=+e.target.value; };
 $("seek").addEventListener("input",e=>{ Music.seeking=true; const a=Music.el; if(a&&a.duration){ a.currentTime=e.target.value/1000*a.duration; $("tNow").textContent=fmt(a.currentTime); if(a.paused) Music.loop(); } });
 $("seek").addEventListener("change",()=>{ Music.seeking=false; });
