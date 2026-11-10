@@ -117,24 +117,25 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 @keyframes llIn{from{opacity:0;transform:translateY(.25em)}to{opacity:1;transform:none}}
 .lens .lwd{white-space:nowrap}
 .lens .ak{display:inline-block;position:relative;line-height:1.3;padding:.04em .02em;border-radius:.25em;transform-origin:50% 60%;
-  transition:transform .3s cubic-bezier(.34,1.4,.64,1),color .3s,background-color .3s,box-shadow .3s}
-/* melody text: each syllable sits at its pitch */
-.lens .ak.sv{top:-.3em}
-.lens .ak.dsv{top:-.36em}
-.lens .ak.anu{top:.24em}
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),color .3s,background-color .3s,box-shadow .3s}
+/* at rest the words stay whole: only a faint hint of pitch */
+.lens .ak.sv{top:-.07em}
+.lens .ak.dsv{top:-.09em}
+.lens .ak.anu{top:.06em}
 .lens .ak.anu{background:var(--anu-bg);border-bottom:3px solid var(--anu)}
 .lens .ak.sv{background:var(--sv-bg);border-top:3px solid var(--sv)}
 .lens .ak.dsv{background:var(--sv-bg);border-top:7px double var(--sv)}
 .lens .ak.done{color:var(--haldi)}
-.lens .ak.now{transform:scale(1.22);color:var(--fg);background:var(--glow);box-shadow:0 0 0 .14em var(--glow),0 0 .9em .1em var(--glow)}
-.lens .ak.now.anu{transform:translateY(.08em) scale(1.22);color:var(--anu);background:var(--anu-hot);box-shadow:0 0 0 .14em var(--anu-hot),0 0 .9em .1em var(--anu-hot)}
-.lens .ak.now.sv{transform:translateY(-.08em) scale(1.22);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
-.lens .ak.now.dsv{transform:translateY(-.12em) scale(1.28);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
+.lens .ak.now{transition:transform var(--glide,.22s) cubic-bezier(.3,.6,.3,1),color .2s,background-color .2s,box-shadow .2s;transform:scale(1.16);color:var(--fg);background:var(--glow);box-shadow:0 0 0 .14em var(--glow),0 0 .9em .1em var(--glow)}
+.lens .ak.now.anu{transform:translateY(.34em) scale(1.2);color:var(--anu);background:var(--anu-hot);box-shadow:0 0 0 .14em var(--anu-hot),0 0 .9em .1em var(--anu-hot)}
+.lens .ak.now.sv{transform:translateY(-.38em) scale(1.2);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
+.lens .ak.now.dsv{transform:translateY(-.46em) scale(1.24);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
 .lens .ak.soon{animation:soon .45s ease-in-out infinite alternate}
 @keyframes soon{to{box-shadow:0 0 0 .14em var(--sv-hot)}}
 .lens .ak.soon.anu{animation-name:soonA}
 @keyframes soonA{to{box-shadow:0 0 0 .14em var(--anu-hot)}}
 .lens .pc{position:absolute;left:0;top:0;overflow:visible;z-index:-1}
+.lens .pc text{font-family:var(--f-ui);font-size:11px;font-weight:700;fill:var(--muted)}
 .lens .pd{position:absolute;left:0;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--haldi);
   box-shadow:0 0 0 3px var(--panel);opacity:0;transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .2s}
 .lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;margin-top:.35em;display:flex;align-items:center;gap:.4em;color:var(--muted)}
@@ -214,6 +215,8 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .bar .btn.ghost{min-width:3.4rem;padding:.6rem .9rem;flex:none}
 .bar .btn{white-space:nowrap}
 .more-btn{flex:none;min-height:3.1rem}
+#pracQuick.on{border-color:var(--haldi);color:var(--haldi);background:var(--haldi-soft)}
+@media (max-width:560px){#pracQuick .pq-t{display:none}#pracQuick{min-width:3.1rem;padding:.5rem}}
 .dock .tapbtn{flex:1 1 auto;width:auto;padding:.85rem 1rem;font-size:1.05rem}
 .row{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
 .grow{flex:1 1 auto;min-width:0}
@@ -351,6 +354,7 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
         <button class="btn" id="tapDone">Finish</button>
       </div>
     </div>
+    <button class="btn more-btn" id="pracQuick" aria-label="Practise a portion"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 12a8 8 0 0 1 13.7-5.6M20 12a8 8 0 0 1-13.7 5.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M18.5 2.8v4.1h-4.1M5.5 21.2v-4.1h4.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="pq-t">Practise</span></button>
     <button class="btn more-btn" id="moreBtn" aria-expanded="false" aria-controls="morePanel">More</button>
   </div>
   <div class="more" id="morePanel" hidden>
@@ -731,7 +735,8 @@ const Swara = {
     d.innerHTML='<span><span class="g anu">क॒</span><span><b>anudātta</b> · low</span></span>'+
       '<span><span class="g sv">क॑</span><span><b>svarita</b> · rising</span></span>'+
       '<span><span class="g dsv">का᳚</span><span><b>dīrgha svarita</b> · long rise</span></span>'+
-      '<span><span class="pzk">’</span><span><b>pause</b> in the recording</span></span>';
+      '<span><span class="pzk">’</span><span><b>pause</b> in the recording</span></span>'+
+      '<span><span class="pzk">⟲</span><span><b>Practise</b> (next to Play): loop any words, a line or an anuvāka</span></span>';
     return d;
   }
 };
@@ -829,25 +834,45 @@ const Lens = {
     e.style.left="0px"; e.style.top=(below? host.offsetHeight+8 : -H-8)+"px";
     this.contour();
   },
-  // the melody ribbon runs through the syllables themselves (they sit at their pitch); one ribbon per row
+  // the melody: a smooth curve under each row, between a "high" rail and a "low" rail
+  LV: {sv:0, dsv:0, anu:1},
+  path(p){
+    if(p.length<2) return "";
+    let d="M"+p[0][0].toFixed(1)+","+p[0][1].toFixed(1);
+    for(let q=0;q<p.length-1;q++){
+      const p0=p[q-1]||p[q], p1=p[q], p2=p[q+1], p3=p[q+2]||p2;
+      d+=" C"+(p1[0]+(p2[0]-p0[0])/6).toFixed(1)+","+(p1[1]+(p2[1]-p0[1])/6).toFixed(1)+" "+(p2[0]-(p3[0]-p1[0])/6).toFixed(1)+","+(p2[1]-(p3[1]-p1[1])/6).toFixed(1)+" "+p2[0].toFixed(1)+","+p2[1].toFixed(1);
+    }
+    return d;
+  },
   contour(){
-    const e=this.el, svg=e.children[1], pts=[];
-    this.items.forEach(it=>{ const sp=it.el; pts.push([sp.offsetLeft+sp.offsetWidth/2, sp.offsetTop+sp.offsetHeight+3, it.a.kind, Math.round(sp.parentNode.offsetTop)]); });
-    this.pts=pts;
+    const e=this.el, svg=e.children[1], fs=parseFloat(getComputedStyle(e.firstChild).fontSize)||30, band=fs*0.34;
+    const rows=[]; let run=[], key=null;
+    this.items.forEach((it,q)=>{ const k=Math.round(it.el.parentNode.offsetTop); if(key!==null&&k!==key){ rows.push(run); run=[]; } key=k; run.push(q); }); if(run.length) rows.push(run);
+    const pts=[]; let html="";
+    rows.forEach((r,ri)=>{
+      let bottom=0; r.forEach(q=>{ const sp=this.items[q].el; bottom=Math.max(bottom, sp.offsetTop+sp.offsetHeight); });
+      const hi=bottom+6, lo=hi+band;
+      r.forEach(q=>{ const it=this.items[q], sp=it.el, lv=it.a.kind in this.LV? this.LV[it.a.kind] : 0.5;
+        pts[q]=[sp.offsetLeft+sp.offsetWidth/2, hi+lv*band, it.a.kind]; });
+      const x0=pts[r[0]][0]-fs*0.3, x1=pts[r[r.length-1]][0]+fs*0.3;
+      html+='<line x1="'+x0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y1="'+hi.toFixed(1)+'" y2="'+hi.toFixed(1)+'" stroke="var(--sv)" stroke-opacity=".28" stroke-dasharray="2 5"/>'+
+            '<line x1="'+x0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y1="'+lo.toFixed(1)+'" y2="'+lo.toFixed(1)+'" stroke="var(--anu)" stroke-opacity=".28" stroke-dasharray="2 5"/>';
+      if(ri===0) html+='<text x="'+(x1+6).toFixed(1)+'" y="'+(hi+4).toFixed(1)+'">high</text><text x="'+(x1+6).toFixed(1)+'" y="'+(lo+4).toFixed(1)+'">low</text>';
+    });
+    this.pts=pts; this.rows=rows; this.sw=Math.max(3,fs*0.09).toFixed(1);
     svg.setAttribute("width",e.clientWidth); svg.setAttribute("height",e.clientHeight);
-    this.rows=[]; let run=[];
-    pts.forEach((p,q)=>{ if(q&&p[3]!==pts[q-1][3]){ this.rows.push(run); run=[]; } run.push(q); }); if(run.length) this.rows.push(run);
-    const fs=parseFloat(getComputedStyle(e.firstChild).fontSize)||30;
-    this.sw=Math.max(3,fs*0.1).toFixed(1);
-    svg.innerHTML=this.rows.map(r=>'<polyline points="'+r.map(q=>pts[q][0].toFixed(1)+","+pts[q][1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--dim)" stroke-opacity=".55" stroke-width="'+this.sw+'" stroke-linecap="round" stroke-linejoin="round"/>').join("")+'<g class="sung"></g>';
+    html+=rows.map(r=>'<path d="'+this.path(r.map(q=>pts[q]))+'" fill="none" stroke="var(--dim)" stroke-opacity=".6" stroke-width="'+this.sw+'" stroke-linecap="round"/>').join("");
+    html+=pts.map(p=>p[2]?'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.6" fill="'+(p[2]==="anu"?"var(--anu)":"var(--sv)")+'"/>':"").join("");
+    svg.innerHTML=html+'<g class="sung"></g>';
     this.state="";
   },
-  sung(upto,frac){   // gold ribbon over the part already sung
+  sung(upto,frac){   // the part already sung, in gold, along the same curve
     const g=this.el&&this.el.querySelector(".pc .sung"), pts=this.pts; if(!g||!pts) return;
     let html="";
     this.rows.forEach(r=>{
       const pl=[]; for(const q of r){ if(q<upto) pl.push(pts[q]); else if(q===upto&&frac>0&&pl.length){ const p0=pl[pl.length-1], p1=pts[q]; pl.push([p0[0]+(p1[0]-p0[0])*frac,p0[1]+(p1[1]-p0[1])*frac]); break; } else break; }
-      if(pl.length>1) html+='<polyline points="'+pl.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--haldi)" stroke-opacity="1" stroke-width="'+this.sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
+      if(pl.length>1) html+='<path d="'+this.path(pl)+'" fill="none" stroke="var(--haldi)" stroke-width="'+(+this.sw+1)+'" stroke-linecap="round"/>';
     });
     g.innerHTML=html;
   },
@@ -870,6 +895,7 @@ const Lens = {
     const st=upto+":"+now+":"+soon;
     if(this.items.length) this.sung(now>=0?now:upto, now>=0?frac:0);
     if(st===this.state) return; this.state=st;
+    if(now>=0&&tm[now]) this.items[now].el.style.setProperty("--glide",Math.max(0.12,Math.min(0.45,(tm[now][1]-tm[now][0])*0.6)).toFixed(2)+"s");
     this.items.forEach((it,q)=>{ it.el.classList.toggle("done",q<upto); it.el.classList.toggle("now",q===now); it.el.classList.toggle("soon",q===soon); });
     const it=this.items[now], kind=it&&it.a.kind;
     this.setLabel(kind||"");
@@ -925,14 +951,14 @@ const Practice = {
     if(!Music.el||!Music.pts||!Music.pts.length){ toast("Practice needs the recording. Load it first.",3200); return; }
     setMore(false); this.on=true; this.step=1; this.a=this.b=null;
     $("pReps").value=this.reps; $("pGap").value=this.gap; $("pRate").value=["0.5","0.75","1"].indexOf($("rate").value)>=0?$("rate").value:"1";
-    $("pracRow").hidden=false; document.body.classList.add("practising");
+    $("pracRow").hidden=false; document.body.classList.add("practising"); $("pracQuick").classList.add("on");
     this.say("Tap the first word to practise. Or tap a line, or choose Whole line or Whole anuvāka.");
     this.paint(); requestAnimationFrame(()=>follow(true));
   },
   close(){
     if(!this.on) return;
     clearTimeout(this.waitT); this.waitT=null; this.on=false; this.step=0; this.a=this.b=null;
-    $("pracRow").hidden=true; document.body.classList.remove("practising"); this.paint();
+    $("pracRow").hidden=true; document.body.classList.remove("practising"); $("pracQuick").classList.remove("on"); this.paint();
   },
   say(t){ $("pracMsg").textContent=t; },
   // time where word k of line i starts (or ends); k==null means the whole line
@@ -1016,6 +1042,7 @@ const Practice = {
   }
 };
 $("pracBtn").onclick=()=>Practice.open();
+$("pracQuick").onclick=()=>Practice.on?Practice.close():Practice.open();
 $("pDone").onclick=()=>Practice.close();
 $("pLine").onclick=()=>Practice.set({i:S.cur,k:null},{i:S.cur,k:null});
 $("pSec").onclick=()=>{ const sec=S.lines[S.cur]&&S.lines[S.cur].sec; let a=S.cur,b=S.cur;
@@ -1080,7 +1107,7 @@ function updateHint(){
 function setMode(m){
   S.mode=m; LS.set("mode",m);
   $("mRecite").setAttribute("aria-pressed",m==="recite"); $("mMusic").setAttribute("aria-pressed",m==="music");
-  $("dRecite").hidden=m!=="recite"; $("dMusic").hidden=m!=="music"; $("moreMusic").hidden=m!=="music"; $("meter").hidden=!(m==="recite"&&Voice.on);
+  $("dRecite").hidden=m!=="recite"; $("dMusic").hidden=m!=="music"; $("pracQuick").hidden=m!=="music"; if(m!=="music") Practice.close(); $("moreMusic").hidden=m!=="music"; $("meter").hidden=!(m==="recite"&&Voice.on);
   if(m!=="recite") Voice.stop();
   if(m!=="music"){ Music.pause(); Tap.finish(false); }
   if(m==="music") Music.restoreForText();

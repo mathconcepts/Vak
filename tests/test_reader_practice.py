@@ -18,14 +18,22 @@ const r=await p.evaluate(async()=>{
   out.end=+(Practice.end-0.25).toFixed(2); out.wantEnd=ws[4][1];
   out.tiles=document.querySelectorAll('.rg').length;
   Practice.close(); out.closedTiles=document.querySelectorAll('.rg').length;
+  // stop playback for good (a play queued by the practice step must not restart it), so only this test drives the lens
+  Music.tryPlay=()=>{}; for(let k=0;k<20;k++){ Music.el.pause(); await new Promise(r=>setTimeout(r,100)); if(Music.el.paused&&k>4) break; }
+  cancelAnimationFrame(Music.raf);
   // lens: feed every word time of lines 3..6 and count how often it is rebuilt
   let n=0; const o=Lens.build.bind(Lens); Lens.build=i=>{n++;return o(i)};
   for(const i of [3,4,5,6]){ const w=Music.wordsFor(i); for(const t of w.filter(Boolean)) Lens.update(i,t[0]+0.01,w); }
   out.builds=n;
-  // melody text: svarita syllables sit higher than unmarked ones, anudatta lower
-  const L=document.querySelector('.lens'), sv=L.querySelector('.ak.sv'), an=L.querySelector('.ak.anu');
-  const plain=[...L.querySelectorAll('.ak')].find(x=>!/sv|anu|dsv/.test(x.className)&&x.parentNode.offsetTop===sv.parentNode.offsetTop);
-  out.svHigher=plain.offsetTop-sv.offsetTop; out.anuLower=an.offsetTop-plain.offsetTop;
+  // pitch you can feel: at rest the word stays whole; while sung, svarita glides up and anudatta down
+  const i=Lens.i, w=Music.wordsFor(i), qs=Lens.items.findIndex(x=>x.a.kind==='sv'), qa=Lens.items.findIndex(x=>x.a.kind==='anu');
+  const es=Lens.items[qs].el, ea=Lens.items[qa].el;
+  const ty=e=>{ const m=getComputedStyle(e).transform; return m&&m!=='none'? +m.split(',')[5].replace(')','') : 0; }, mid=q=>(Lens.tm[q][0]+Lens.tm[q][1])/2;
+  const pause=ms=>new Promise(r=>setTimeout(r,ms));
+  Lens.update(i,mid(qs),w); await pause(700); out.svGlide=-ty(es); out.svRest=ty(ea);
+  Lens.update(i,mid(qa),w); await pause(700); out.anuGlide=ty(ea); out.svBack=ty(es);
+  out.rails=document.querySelectorAll('.lens .pc line').length;
+  const r=$("pracQuick").getBoundingClientRect(); out.practiseVisible=r.width>0&&$("morePanel").hidden;
   return out; });
 r.errors=errs; console.log(JSON.stringify(r)); await b.close(); })();
 """
@@ -49,4 +57,7 @@ def test_practice_range_and_line_lens():
     assert abs(r["start"] - r["wantStart"]) < 0.02 and abs(r["end"] - r["wantEnd"]) < 0.02
     assert r["tiles"] == 4 and r["closedTiles"] == 0
     assert r["builds"] == 4          # once per line, however many words it has
-    assert r["svHigher"] > 5 and r["anuLower"] > 5   # the text itself follows the pitch
+    assert r["svGlide"] > 8 and r["anuGlide"] > 8   # while sung: svarita glides up, anudatta down
+    assert r["svRest"] == 0 and abs(r["svBack"]) < 1  # at rest the word stays whole
+    assert r["rails"] >= 2                            # high and low guide rails
+    assert r["practiseVisible"]                       # Practise is in the main bar, not hidden in More

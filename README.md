@@ -34,9 +34,9 @@ Put the prayer on a screen and let it keep the place for her:
   - Fix the timing if a Bluetooth speaker runs late.
 - **For Vedic chanting (Sri Rudram):**
   - Swara tiles: each anudātta (low) syllable sits on a **blue tile with a line under**, each svarita (rising) one on an **orange tile with a line over**, and dīrgha svarita has a **double line**.
-  - The **zoom lens** shows the whole line being sung, large, as a melody: svarita syllables sit higher, anudātta lower, with a melody line under them that turns gold as it is sung. The next swara syllable glows just before it comes. It can be switched off in More.
+  - The **zoom lens** shows the whole line being sung, large, with words kept whole: the syllable being sung glides up for svarita and down for anudātta, in time with the voice, over a melody curve with high and low guide lines that turns gold as it is sung. The next swara syllable glows just before it comes. It can be switched off in More.
   - **Easier to stay with** (helpful for ADHD): show only nearby lines, a progress chip (anuvāka and line), and a quiet note when an anuvāka is complete. See [docs/SWARA-UX.md](docs/SWARA-UX.md).
-  - **Practise a portion:** tap the first and last word (or a line, or the whole anuvāka) and it loops that part, as many times as you choose, with a pause to chant it back and a slower speed.
+  - **Practise** (the button next to Play): tap the first and last word (or a line, or the whole anuvāka) and it loops that part, as many times as you choose, with a pause to chant it back and a slower speed.
   - Pause marks **’** and **’’** show where the reciter pauses, taken from the recording itself.
   - Tap a word to hear it. **0.5×** slows the voice without changing its pitch.
 

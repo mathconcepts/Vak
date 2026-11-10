@@ -15,7 +15,7 @@ Amma and Appa chant Sri Rudram in the morning, with the recording on an iPad tha
 | **3. Follow the chant** | Know where the chant is, and its swara, without the eye being pulled around | The **zoom lens** shows the **whole line** being sung, one and a half times larger, above it. It stays still for the whole line; only the light moves, sweeping through it syllable by syllable. The syllable being sung grows a little and its swara is named under it ("anudātta · low"). The same syllable glows in the line. |
 | **3b. Feel the pitch** | Sense low and high without reading labels | Motion carries meaning: the line being sung **zooms in** and the rest recede. The lens changes only when the line changes. The syllable being sung **grows and moves with its pitch**: it dips for anudātta and lifts for svarita. A **pitch line** under the lens word (low, middle, high, from the swara marks) has a dot that travels along it. The tile in the line pulses once. |
 | **4. Pause** | Breathe where the reciter breathes | **’** and **’’** after a word mark the reciter's pauses, measured from the recording. They glow during the pause, and the lens holds the last word through short pauses. |
-| **5. Practise a hard spot** | Loop exactly the part that is hard, and chant it back | More → **Practise a portion**. Tap the first word, then the last word (either order). Tap a line to take the whole line, or press **Whole line** or **Whole anuvāka**. It loops at once. Choose **3, 5 or 11 times** or keep repeating, a **2–8 s pause** after each time ("Your turn: chant it now… 3"), and **0.5× / 0.75×** speed with true pitch. Tap new words any time to change the portion. **Done** returns to normal. |
+| **5. Practise a hard spot** | Loop exactly the part that is hard, and chant it back | The **Practise** button next to Play (also in More). Tap the first word, then the last word (either order). Tap a line to take the whole line, or press **Whole line** or **Whole anuvāka**. It loops at once. Choose **3, 5 or 11 times** or keep repeating, a **2–8 s pause** after each time ("Your turn: chant it now… 3"), and **0.5× / 0.75×** speed with true pitch. Tap new words any time to change the portion. **Done** returns to normal. |
 | **6. Make it calmer** | Less on screen | More → **Zoom lens** and **Focus line** switch off the lens and the line zoom. Settings (Aa): Swara marks and Pause marks switch off. Reduced-motion devices get no animation. |
 
 ## Where the timing comes from
@@ -26,7 +26,9 @@ Amma and Appa chant Sri Rudram in the morning, with the recording on an iPad tha
 
 ## Melody text
 
-In the lens, **the text itself follows the pitch**: svarita syllables sit higher, anudātta syllables lower, unmarked syllables in the middle. A thin melody line runs under them, rising and falling with the syllables. It turns gold as the line is sung, and is grey for what is still to come. The syllable being sung lights up in its swara colour and grows; the next swara syllable glows softly about half a second before it arrives, so the voice can get ready.
+In the lens, **words stay whole** on one line, so they are easy to read. **The syllable being sung moves with its pitch**: a svarita syllable glides up, an anudātta syllable glides down, a dīrgha svarita glides higher and holds. Each movement lasts about as long as the syllable is sung, and then the syllable settles back. Under the line, a smooth **melody curve** runs between two labelled guide rails, **high** and **low**, turning gold as the line is sung. The next swara syllable glows softly about half a second before it arrives.
+
+Why this way: an earlier version shifted every marked syllable all the time. That broke words apart (for example श, रु and व्या in शर्व्या sat at three heights), and the static shift was not linked to the sound. Movement now happens only when the sound happens.
 
 ## Attention aids (helpful for ADHD, and for tired eyes)
 
@@ -36,7 +38,7 @@ In the lens, **the text itself follows the pitch**: svarita syllables sit higher
 | **Nearby lines only** | Everything except the two lines before and after the current one fades almost away, so nothing else competes for attention. | More → Nearby lines only |
 | **Cue before it comes** | The next swara syllable glows just before it is sung. Knowing what is next makes it easier to stay. | Automatic in the lens |
 | **Progress you can see** | A small chip shows the anuvāka, "line 5 of 32", and a bar. A quiet "✦ anuvāka complete" marks each finished section. | More → Show progress |
-| **Small loops** | Practise a few words at a time, with dots for each repeat (◉○○) and a "your turn" pause. | More → Practise a portion |
+| **Small loops** | Practise a few words at a time, with dots for each repeat (◉○○) and a "your turn" pause. | **Practise** button next to Play |
 | **Less motion when needed** | Every aid can be switched off; reduced-motion devices get no animation. | More, Settings |
 
 ## Why the lens shows a line, not a word
