@@ -169,3 +169,14 @@ def test_site_build_is_installable_and_offline_ready(ws, tmp_path):
     assert {"index.html", "sw.js", "manifest.webmanifest", "icon-180.png", "icon-192.png", "icon-512.png", ".nojekyll"} <= names
     html = (out / "index.html").read_text(encoding="utf-8")
     assert 'rel="manifest"' in html and 'serviceWorker' in html and r["audio"] == []
+
+
+def test_vedic_swaras_are_stripped_for_the_aligner_but_kept_in_text():
+    sys.path.insert(0, HERE)
+    from vakstudio import align, textfmt
+    # anudātta ॒, svarita ॑, dīrgha svarita ᳚ never reach the speech model; ꣳ is sounded "gm"
+    assert align.speakable("सर्वा᳚ञ्ज॒म्भय॑") == "सर्वाञ्जम्भय"
+    assert align.speakable("हिꣳ॑सीः॒") == "हिग्ंसीः"
+    secs = textfmt.parse("# अनुवाकः १\nनम॑स्ते रुद्र म॒न्यव॑ उ॒तोत॒ इष॑वे॒ नमः॑ ।\nअहीग्॑श्च॒ सर्वा᳚ञ्ज॒म्भय॒न् ॥ १॥\n")
+    assert textfmt.check(secs)["ok"]
+    assert "॒" in textfmt.lines(secs)[0] and "᳚" in textfmt.lines(secs)[1]

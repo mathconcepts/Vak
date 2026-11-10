@@ -25,11 +25,20 @@ def _uroman():
     return _U
 
 
+VEDIC = str.maketrans({"\u0951": None, "\u0952": None, "\u1cda": None, "\u1cdb": None, "\u200b": None,
+                       "\u200c": None, "\u200d": None, "\ua8f3": "ग्ं", "ॐ": "ओम्"})   # Taittirīya reciters sound ꣳ as "gm"
+
+
+def speakable(w):
+    """Strip swara marks (॑ ॒ ᳚) and sound Vedic ꣳ as "gm", as Taittirīya reciters do."""
+    return w.translate(VEDIC)
+
+
 def tokens(line):
     """The Reader's words for a line (split on spaces), each with its romanized letters."""
     out = []
     for w in line.strip().split():
-        r = _uroman().romanize_string(w.replace("ॐ", "ओम्")).lower()
+        r = _uroman().romanize_string(speakable(w)).lower()
         out.append((w, re.sub(r"[^a-z']", "", r)))
     return out
 
@@ -160,6 +169,11 @@ def align(lines, E, vocab, order=None, anchors=None, band1=None, band2=12.0, reg
         got = [w for w in r["words"] if w]
         spans2.append((got[0][0], got[-1][1]) if got else spans[q])
     p2 = _pass(E, vocab, seq, spans2, band2)
+    for r in p2:   # a line's first word stranded far before the rest (e.g. ॐ caught by an invocation) joins its line
+        ws = r["words"]
+        if len(ws) > 1 and ws[0] and ws[1] and ws[1][0] - ws[0][1] > 2.5:
+            d = min(ws[0][1] - ws[0][0], 0.8)
+            ws[0] = [round(ws[1][0] - d - 0.1, 2), round(ws[1][0] - 0.1, 2)]
     n = len(lines)
     times, words, conf, reprise, seen = [None] * n, [None] * n, [None] * n, [], set()
     for (i, _), r in zip(seq, p2):

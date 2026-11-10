@@ -1,0 +1,106 @@
+{
+  "id": "namakam",
+  "title": "श्रीरुद्रप्रश्नः · नमकम्",
+  "sub": "Sri Rudram Namakam · Krishna Yajurveda",
+  "source": "Text: <a href=\"https://sanskritdocuments.org/doc_veda/rudra.html\" target=\"_blank\" rel=\"noopener\">sanskritdocuments.org</a> (Vedic svara edition, encoded and proofread by Rajagopal Iyer and Rekha Venkatesh). Taittirīya Saṁhitā 4.5.",
+  "licence": "private",
+  "version": 3,
+  "created": "2026-11-10T07:59:27+00:00",
+  "order": "0-31,33-209,211-215",
+  "anchors": {},
+  "judge": {
+    "n": 30,
+    "seed": 1,
+    "bar": 0.65
+  },
+  "notes": [
+    {
+      "at": "2026-11-10T07:59:27+00:00",
+      "note": "Text copied verbatim (words and swara marks) from the sanskritdocuments.org Vedic svara edition; only line breaks were chosen (at dandas, between namo-pairs, and every 4th \"me\" in Chamakam). Recording starts with a short invocation (om sri gurubhyo namah ... hari om) that is not in the text."
+    },
+    {
+      "at": "2026-11-10T08:02:25+00:00",
+      "note": "This recording chants 'shambhave namah' at the very start (after 'om sri gurubhyo namah hari om'), not before anuvaka 2, and goes from 'mrityave svaha' straight to 'pranananam granthirasi', skipping 'om namo bhagavate rudraya vishnave mrityurme pahi'. Those two lines (32, 173) are marked not-in-recording."
+    }
+  ],
+  "gates": {
+    "text": {
+      "ok": true,
+      "at": "2026-11-10T08:11:47+00:00",
+      "problems": 0,
+      "stats": {
+        "sections": 13,
+        "lines": 216,
+        "notes": 1,
+        "numbered_verses": 11
+      },
+      "hash": "397890df0db70956"
+    },
+    "align": {
+      "ok": true,
+      "low_lines": [
+        4,
+        48,
+        56,
+        64,
+        80,
+        81,
+        89,
+        127,
+        129,
+        130,
+        135,
+        136,
+        138,
+        139,
+        141,
+        186
+      ],
+      "low_frac": 0.075,
+      "median_conf": 0.704,
+      "at": "2026-11-10T08:11:59+00:00",
+      "lines": 214,
+      "not_in_recording": 2,
+      "region": [
+        26.26,
+        968.5
+      ]
+    },
+    "judge": {
+      "ok": true,
+      "rate": 0.8,
+      "bar": 0.65,
+      "failed_lines": [
+        36,
+        67,
+        70,
+        101,
+        116,
+        157
+      ],
+      "at": "2026-11-10T08:24:22+00:00",
+      "passed": 24,
+      "total": 30,
+      "seed": 1
+    }
+  },
+  "recording": {
+    "file": "original.m4a",
+    "original_name": "T3.1. Namakam.m4a",
+    "label": "Recording",
+    "title": "Namakam",
+    "bytes": 8441622,
+    "duration": 969.05,
+    "sha256": "e036ea585f17c33a66fdb583e0ae50513848b53d89750793f4b3394dc0f7e486",
+    "mime": "audio/mp4"
+  },
+  "updated": "2026-11-10T08:29:09+00:00",
+  "bite": "Press play. Follow the light. Chant with the swaras.",
+  "bite_end": "Every syllable, in step with the recitation.",
+  "build": {
+    "version": 3,
+    "at": "2026-11-10T08:29:09+00:00",
+    "hash": "2c6fe2db4d7f613b",
+    "timed": true
+  }
+}

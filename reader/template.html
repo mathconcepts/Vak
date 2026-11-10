@@ -78,7 +78,7 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .steps li b{font-weight:700}
 .hint b{color:var(--fg);font-weight:500}
 .sec-h{font-family:var(--f-text);color:var(--sindoor);text-align:center;font-size:calc(1.25rem*var(--scale));margin:2.2rem 0 1rem;text-wrap:balance}
-.note{font-family:var(--f-ui,inherit);font-style:italic;color:var(--dim);text-align:center;font-size:calc(.95rem*var(--scale));margin:1rem auto;max-width:34em}
+.note{font-family:"Alegreya Sans","Tiro Devanagari Sanskrit","Noto Serif Devanagari",serif;font-style:italic;color:var(--dim);text-align:center;font-size:calc(.95rem*var(--scale));margin:1rem auto;max-width:34em}
 .sec-h::before,.sec-h::after{content:"✦";font-size:.6em;color:var(--dim);margin:0 .6em;vertical-align:.25em}
 .verse{margin:0 0 1.15rem;padding:.2rem 0}
 .ln{font-family:var(--f-text);font-size:calc(1.42rem*var(--scale));line-height:1.75;color:var(--muted);padding:.1rem .6rem;margin:0 -.6rem;border-radius:10px;cursor:pointer;transition:color .25s,background .25s;overflow-wrap:anywhere}
@@ -808,6 +808,7 @@ const Music = {
     if(this.el){ this.el.pause(); }
     this.url=own?url:null;
     const a=this.el||new Audio(); this.el=a; a.preload="auto"; a.src=url; a.playbackRate=+$("rate").value;
+    const gen=this._gen=(this._gen||0)+1;   // a slow download for an earlier prayer must never swap the audio back
     a.onerror=()=>toast("This recording couldn't be loaded. Check your connection, or choose the file from your device.",4500);
     a.onloadedmetadata=()=>{
       $("tDur").textContent=fmt(a.duration); $("seek").disabled=false;
@@ -817,10 +818,11 @@ const Music = {
       if(!seekable&&!/^blob:|^data:/.test(a.currentSrc)&&!this._fetching){
         this._fetching=true; $("fileName").textContent=name+" · preparing…";
         fetch(a.currentSrc).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(bl=>{
+          if(this._gen!==gen) return;
           const keep=a.currentTime, playing=!a.paused;
           this._fullUrl=URL.createObjectURL(bl); a.src=this._fullUrl; a.currentTime=keep; if(playing) a.play().catch(()=>{});
           $("fileName").textContent=name;
-        }).catch(()=>{ $("fileName").textContent=name; }).finally(()=>{ this._fetching=false; });
+        }).catch(()=>{ if(this._gen===gen) $("fileName").textContent=name; }).finally(()=>{ this._fetching=false; });
       }
     };
     a.onplay=()=>{ $("playBtn").textContent="Pause"; keepAwake(true); this.loop(); };

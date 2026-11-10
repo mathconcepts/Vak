@@ -115,7 +115,7 @@ def build(packs, out, audio_paths=None, version="1"):
     for p in packs:
         src = (audio_paths or {}).get(p["id"])
         if src and p.get("recording"):
-            name = f"{p['id']}.mp3"
+            name = p["id"] + (os.path.splitext(src)[1].lower() or ".mp3")
             shutil.copyfile(src, os.path.join(out, name))
             p["recording"]["src"] = name
             files.append(name)

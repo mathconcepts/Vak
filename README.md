@@ -62,6 +62,7 @@ Then Studio builds the Reader file.
 | Reader: Music and Recite modes, word-by-word gold, auto-scroll, works offline and on older iPads | **Together mode:** family in different cities follow one leader on the same word |
 | Studio: text check, timing, listening check, approval, build | **Sankalpa count:** a family total of parayanams, with no server |
 | **Lalitā Sahasranāma** pack, all checks passed | **Other scripts:** Telugu, Kannada, Tamil |
+| **Sri Rudram: Namakam and Chamakam** with swara marks (anudātta ॒, svarita ॑, dīrgha svarita ᳚), all checks passed | **Chamakam anuvākas 2–11**, once a full recording is added |
 | **Krishna Yajurveda Sandhyavandanam** pack, waiting for its text and recording | **YouTube playback**, for videos whose owners allow embedding |
 
 ## For developers
