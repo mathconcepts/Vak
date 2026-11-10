@@ -21,7 +21,12 @@ const r=await p.evaluate(async()=>{
   // lens: feed every word time of lines 3..6 and count how often it is rebuilt
   let n=0; const o=Lens.build.bind(Lens); Lens.build=i=>{n++;return o(i)};
   for(const i of [3,4,5,6]){ const w=Music.wordsFor(i); for(const t of w.filter(Boolean)) Lens.update(i,t[0]+0.01,w); }
-  out.builds=n; return out; });
+  out.builds=n;
+  // melody text: svarita syllables sit higher than unmarked ones, anudatta lower
+  const L=document.querySelector('.lens'), sv=L.querySelector('.ak.sv'), an=L.querySelector('.ak.anu');
+  const plain=[...L.querySelectorAll('.ak')].find(x=>!/sv|anu|dsv/.test(x.className)&&x.parentNode.offsetTop===sv.parentNode.offsetTop);
+  out.svHigher=plain.offsetTop-sv.offsetTop; out.anuLower=an.offsetTop-plain.offsetTop;
+  return out; });
 r.errors=errs; console.log(JSON.stringify(r)); await b.close(); })();
 """
 
@@ -44,3 +49,4 @@ def test_practice_range_and_line_lens():
     assert abs(r["start"] - r["wantStart"]) < 0.02 and abs(r["end"] - r["wantEnd"]) < 0.02
     assert r["tiles"] == 4 and r["closedTiles"] == 0
     assert r["builds"] == 4          # once per line, however many words it has
+    assert r["svHigher"] > 5 and r["anuLower"] > 5   # the text itself follows the pitch

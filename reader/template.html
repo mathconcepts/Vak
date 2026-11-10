@@ -15,6 +15,7 @@
   --haldi:#f2b440;     /* lit text */
   --haldi-soft:rgba(242,180,64,.12);
   --rng:rgba(242,180,64,.2);
+  --glow:rgba(242,180,64,.28);
   --ok:#7fb36a;
   --f-text:"Tiro Devanagari Sanskrit","Noto Serif Devanagari","Sanskrit Text","Mangal",serif;
   --f-ui:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
@@ -28,13 +29,13 @@
   :root:not([data-theme="dark"]){
     --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
     --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
-    --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--ok:#3f7a2e;color-scheme:light;
+    --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--glow:rgba(230,160,20,.3);--ok:#3f7a2e;color-scheme:light;
   }
 }
 :root[data-theme="light"]{
   --anu:#1f6fb0;--sv:#c2410c;--anu-bg:rgba(31,111,176,.14);--sv-bg:rgba(194,65,12,.13);--anu-hot:rgba(31,111,176,.3);--sv-hot:rgba(194,65,12,.28);
   --bg:#f8f1e4;--panel:#fffaf1;--line:#e3d3b8;--fg:#2b1b12;--muted:#7a644c;--dim:#b3a189;
-  --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--ok:#3f7a2e;color-scheme:light;
+  --sindoor:#b5331a;--haldi:#9c5a00;--haldi-soft:rgba(196,120,0,.12);--rng:rgba(214,150,30,.22);--glow:rgba(230,160,20,.3);--ok:#3f7a2e;color-scheme:light;
 }
 [hidden]{display:none!important}
 html,body{height:100%}
@@ -111,21 +112,29 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .lens::after{content:"";position:absolute;left:2.2em;bottom:-8px;width:14px;height:14px;background:var(--panel);
   border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
 .lens.below::after{bottom:auto;top:-8px;transform:rotate(225deg)}
-.lens .ll{font-family:var(--f-text);line-height:2.3;color:var(--fg);white-space:normal}
+.lens .ll{font-family:var(--f-text);line-height:2.75;color:var(--fg);white-space:normal;position:relative;padding-top:.15em}
 .lens .ll.enter{animation:llIn .35s ease-out both}
 @keyframes llIn{from{opacity:0;transform:translateY(.25em)}to{opacity:1;transform:none}}
 .lens .lwd{white-space:nowrap}
-.lens .ak{display:inline-block;line-height:1.3;padding:.04em 0;border-radius:.2em;transform-origin:50% 60%;
-  transition:transform .3s cubic-bezier(.34,1.4,.64,1),color .3s}
+.lens .ak{display:inline-block;position:relative;line-height:1.3;padding:.04em .02em;border-radius:.25em;transform-origin:50% 60%;
+  transition:transform .3s cubic-bezier(.34,1.4,.64,1),color .3s,background-color .3s,box-shadow .3s}
+/* melody text: each syllable sits at its pitch */
+.lens .ak.sv{top:-.3em}
+.lens .ak.dsv{top:-.36em}
+.lens .ak.anu{top:.24em}
 .lens .ak.anu{background:var(--anu-bg);border-bottom:3px solid var(--anu)}
 .lens .ak.sv{background:var(--sv-bg);border-top:3px solid var(--sv)}
 .lens .ak.dsv{background:var(--sv-bg);border-top:7px double var(--sv)}
 .lens .ak.done{color:var(--haldi)}
-.lens .ak.now{transform:scale(1.16);color:var(--haldi)}
-.lens .ak.now.anu{transform:translateY(.07em) scale(1.16);color:var(--anu)}
-.lens .ak.now.sv{transform:translateY(-.07em) scale(1.16);color:var(--sv)}
-.lens .ak.now.dsv{transform:translateY(-.09em) scale(1.2);color:var(--sv)}
-.lens .pc{position:absolute;left:0;top:0;overflow:visible}
+.lens .ak.now{transform:scale(1.22);color:var(--fg);background:var(--glow);box-shadow:0 0 0 .14em var(--glow),0 0 .9em .1em var(--glow)}
+.lens .ak.now.anu{transform:translateY(.08em) scale(1.22);color:var(--anu);background:var(--anu-hot);box-shadow:0 0 0 .14em var(--anu-hot),0 0 .9em .1em var(--anu-hot)}
+.lens .ak.now.sv{transform:translateY(-.08em) scale(1.22);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
+.lens .ak.now.dsv{transform:translateY(-.12em) scale(1.28);color:var(--sv);background:var(--sv-hot);box-shadow:0 0 0 .14em var(--sv-hot),0 0 .9em .1em var(--sv-hot)}
+.lens .ak.soon{animation:soon .45s ease-in-out infinite alternate}
+@keyframes soon{to{box-shadow:0 0 0 .14em var(--sv-hot)}}
+.lens .ak.soon.anu{animation-name:soonA}
+@keyframes soonA{to{box-shadow:0 0 0 .14em var(--anu-hot)}}
+.lens .pc{position:absolute;left:0;top:0;overflow:visible;z-index:-1}
 .lens .pd{position:absolute;left:0;top:0;width:11px;height:11px;margin:-5.5px 0 0 -5.5px;border-radius:50%;background:var(--haldi);
   box-shadow:0 0 0 3px var(--panel);opacity:0;transition:transform .3s cubic-bezier(.34,1.4,.64,1),opacity .2s}
 .lens .lb{font-family:var(--f-ui);font-size:1rem;font-weight:700;height:1.4em;margin-top:.35em;display:flex;align-items:center;gap:.4em;color:var(--muted)}
@@ -135,7 +144,15 @@ main{max-width:44rem;margin:0 auto;padding-inline:16px;padding-block:1.5rem 55vh
 .lens .lb.anu{color:var(--anu)}
 .lens .lb.sv,.lens .lb.dsv{color:var(--sv)}
 .no-lens .lens{display:none}
-@media (prefers-reduced-motion: reduce){.lens .ak.now,.lens .ak.now.anu,.lens .ak.now.sv,.lens .ak.now.dsv,.focus-on.vedic-on .ln.cur{transform:none}.lens .ll.enter,.lens .lb span,.sw.hot{animation:none}}
+@media (prefers-reduced-motion: reduce){.lens .ak.now,.lens .ak.now.anu,.lens .ak.now.sv,.lens .ak.now.dsv,.focus-on.vedic-on .ln.cur{transform:none}.lens .ll.enter,.lens .lb span,.sw.hot,.lens .ak.soon{animation:none}}
+/* attention aids */
+.near-on .ln:not(.cur):not(.near){opacity:.1!important}
+.near-on .ln.near{opacity:.55}
+.chip{position:absolute;right:12px;bottom:12px;z-index:8;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:.3rem .8rem .45rem;font-family:var(--f-ui);font-size:.85rem;color:var(--muted);box-shadow:0 4px 14px rgba(0,0,0,.1);pointer-events:none;min-width:9rem}
+.chip b{color:var(--fg);font-family:var(--f-text);font-weight:400}
+.chip i{display:block;height:3px;border-radius:2px;background:var(--line);margin-top:.3rem;overflow:hidden}
+.chip i u{display:block;height:100%;width:0;background:var(--haldi);transition:width .4s ease-out}
+.no-chip .chip{display:none}
 /* practice: the chosen portion, drawn behind the text */
 .rg{position:absolute;z-index:-2;pointer-events:none;background:var(--rng);border-radius:.3em}
 .rg.a{box-shadow:inset 4px 0 0 var(--haldi)}
@@ -269,7 +286,7 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
   <p class="credit">Created by <b>MSP Giri</b><span class="sep">·</span>Inspired by Navarathri 2026<span class="sep cr3">·</span><span class="cr3">With Jagadamba's blessings, more to come</span></p>
 </header>
 
-<div class="stage"><div class="scroller" id="scroller">
+<div class="stage"><div class="chip" id="chip" hidden aria-live="off"><span id="chipT"></span><i><u id="chipBar"></u></i></div><div class="scroller" id="scroller">
 <main id="main">
   <section class="nojs" id="nojs">
     <h2>This preview shows the prayer, but cannot play it.</h2>
@@ -350,6 +367,9 @@ textarea{min-height:12rem;font-family:var(--f-text);font-size:1.1rem;line-height
       <span class="lbl vedic">Swara emphasis</span>
       <div class="row vedic"><button class="switch" id="lensBtn" role="switch" aria-checked="true"><span class="trk"></span>Zoom lens</button><span class="status grow">the line being sung, large, above it</span></div>
       <div class="row vedic"><button class="switch" id="focusBtn" role="switch" aria-checked="true"><span class="trk"></span>Focus line</button><span class="status grow">zoom the line, fade the rest</span></div>
+      <span class="lbl">Easier to stay with</span>
+      <div class="row"><button class="switch" id="nearBtn" role="switch" aria-checked="false"><span class="trk"></span>Nearby lines only</button><span class="status grow">hide all but the lines around the one being sung</span></div>
+      <div class="row"><button class="switch" id="chipBtn" role="switch" aria-checked="true"><span class="trk"></span>Show progress</button><span class="status grow">which anuvāka, which line, how far</span></div>
       <span class="lbl">Recording</span>
       <div class="row">
         <span class="status grow" id="fileName">No recording yet</span>
@@ -424,11 +444,11 @@ A line like ॥ ध्यानम् ॥ on its own becomes a section heading."
     <h3 class="vedic">Swaras and pauses (Vedic texts)</h3>
     <ul class="vedic">
       <li><b>Blue, line under</b> a syllable: anudātta, sung low. <b>Orange, line over</b>: svarita, the rise. <b>Orange, double line</b>: dīrgha svarita, the long rise.</li>
-      <li>While the recording plays, the <b>zoom lens</b> above the line shows the whole line, large. The light moves through it syllable by syllable, the syllable being sung grows a little, and its swara is named below. A pitch line under the words shows low, middle and high. Word timings come from the recording; within a word, syllable timing is estimated from short and long syllables.</li>
+      <li>While the recording plays, the <b>zoom lens</b> above the line shows the whole line, large, as a melody: <b>svarita syllables sit higher, anudātta syllables lower</b>, and a soft ribbon runs through them. The ribbon fills with gold as the line is sung, the syllable being sung lights up, and the next swara syllable glows just before it comes. Its swara is named below. Word timings come from the recording; within a word, syllable timing is estimated from short and long syllables.</li>
       <li><b>’</b> marks a pause the reciter takes in this recording. It glows while the pause is happening.</li>
       <li><b>Tap any word</b> to hear it from the recording.</li>
       <li><b>Practise:</b> More → <b>Practise a portion</b>. Tap the first word, then the last word (or tap a line, or choose the whole anuvāka). It plays that portion again and again. Choose how many times, a pause after each time to repeat it yourself, and a slower speed. The pitch stays true when slowed.</li>
-      <li>The <b>zoom lens</b> and <b>focus line</b> can be switched off in <b>More</b>.</li>
+      <li>The <b>zoom lens</b> and <b>focus line</b> can be switched off in <b>More</b>. To keep attention on one place, turn on <b>Nearby lines only</b>. <b>Show progress</b> tells you which anuvāka and line you are on.</li>
     </ul>
     <h3>Chant on your own</h3>
     <ul>
@@ -605,7 +625,7 @@ function setCur(i,opt={}){
     LS.set("pos."+S.textId,i);
   }
   if(opt.scroll!=="none") follow(opt.scroll==="instant");
-  status();
+  status(); Aids.at(i,prev);
 }
 
 function fill(i,p){
@@ -741,6 +761,24 @@ const Akshara = {
 };
 
 const Focus = { on: LS.get("focus",true) };   // zoom the line being sung, fade the rest
+/* attention aids: only nearby lines, a progress chip, a quiet word when an anuvāka is complete */
+const Aids = {
+  near: LS.get("near",false), chip: LS.get("chip",true),
+  at(i,prev){
+    document.querySelectorAll(".ln.near").forEach(x=>x.classList.remove("near"));
+    [i-2,i-1,i+1,i+2].forEach(k=>{ if(S.els[k]) S.els[k].classList.add("near"); });
+    const L=S.lines[i]; if(!L||L.sec==null) return;
+    let a=i,b=i; while(a>0&&S.lines[a-1].sec===L.sec) a--; while(b<S.lines.length-1&&S.lines[b+1].sec===L.sec) b++;
+    const t=curText(), title=(t.sections[L.sec]&&t.sections[L.sec].title)||"", n=b-a+1, k=i-a+1;
+    $("chipT").innerHTML=(title?"<b></b> · ":"")+"line "+k+" of "+n; if(title) $("chipT").firstChild.textContent=title;
+    $("chipBar").style.width=(k/n*100).toFixed(1)+"%";
+    $("chip").hidden=!(S.mode==="music"&&n>1);
+    const P=S.lines[prev];
+    if(prev===i-1&&P&&P.sec!==L.sec&&Music.el&&!Music.el.paused){
+      const pt=(t.sections[P.sec]&&t.sections[P.sec].title)||""; if(pt) toast("✦ "+pt+" complete",2400);
+    }
+  }
+};
 /* ---------- the swara lens: the whole line being sung, magnified; it stays still while the light moves through it ---------- */
 const Lens = {
   on: LS.get("lens",true),
@@ -791,38 +829,48 @@ const Lens = {
     e.style.left="0px"; e.style.top=(below? host.offsetHeight+8 : -H-8)+"px";
     this.contour();
   },
+  // the melody ribbon runs through the syllables themselves (they sit at their pitch); one ribbon per row
   contour(){
     const e=this.el, svg=e.children[1], pts=[];
-    this.items.forEach(it=>{ const sp=it.el, lv=it.a.kind in this.LEVEL? this.LEVEL[it.a.kind] : 0.5;
-      pts.push([sp.offsetLeft+sp.offsetWidth/2, sp.offsetTop+sp.offsetHeight+5+lv*11, it.a.kind, sp.offsetTop]); });
+    this.items.forEach(it=>{ const sp=it.el; pts.push([sp.offsetLeft+sp.offsetWidth/2, sp.offsetTop+sp.offsetHeight+3, it.a.kind, Math.round(sp.parentNode.offsetTop)]); });
     this.pts=pts;
     svg.setAttribute("width",e.clientWidth); svg.setAttribute("height",e.clientHeight);
-    const col=k=>k==="anu"?"var(--anu)":k?"var(--sv)":"var(--dim)";
-    let html="", run=[];
-    const flush=()=>{ if(run.length>1) html+='<polyline points="'+run.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>'; run=[]; };
-    pts.forEach((p,q)=>{ if(q&&Math.abs(p[3]-pts[q-1][3])>4) flush(); run.push(p); }); flush();   // one pitch line per row
-    html+=pts.map(p=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(p[2]?3.4:2.2)+'" fill="'+col(p[2])+'"/>').join("");
-    svg.innerHTML=html;
+    this.rows=[]; let run=[];
+    pts.forEach((p,q)=>{ if(q&&p[3]!==pts[q-1][3]){ this.rows.push(run); run=[]; } run.push(q); }); if(run.length) this.rows.push(run);
+    const fs=parseFloat(getComputedStyle(e.firstChild).fontSize)||30;
+    this.sw=Math.max(3,fs*0.1).toFixed(1);
+    svg.innerHTML=this.rows.map(r=>'<polyline points="'+r.map(q=>pts[q][0].toFixed(1)+","+pts[q][1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--dim)" stroke-opacity=".55" stroke-width="'+this.sw+'" stroke-linecap="round" stroke-linejoin="round"/>').join("")+'<g class="sung"></g>';
     this.state="";
+  },
+  sung(upto,frac){   // gold ribbon over the part already sung
+    const g=this.el&&this.el.querySelector(".pc .sung"), pts=this.pts; if(!g||!pts) return;
+    let html="";
+    this.rows.forEach(r=>{
+      const pl=[]; for(const q of r){ if(q<upto) pl.push(pts[q]); else if(q===upto&&frac>0&&pl.length){ const p0=pl[pl.length-1], p1=pts[q]; pl.push([p0[0]+(p1[0]-p0[0])*frac,p0[1]+(p1[1]-p0[1])*frac]); break; } else break; }
+      if(pl.length>1) html+='<polyline points="'+pl.map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" ")+'" fill="none" stroke="var(--haldi)" stroke-opacity="1" stroke-width="'+this.sw+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    });
+    g.innerHTML=html;
+  },
+  times(i,ws){   // start and end of every syllable: word time shared out by short = 1, long = 2
+    const L=S.lines[i];
+    this.tm=this.items.map(it=>{ const w=ws[it.k]; if(!w) return null;
+      const ak=L.words[it.k].ak, tot=ak.reduce((x,y)=>x+y.w,0); let acc=0; for(let q=0;q<it.q;q++) acc+=ak[q].w;
+      return [w[0]+(w[1]-w[0])*acc/tot, w[0]+(w[1]-w[0])*(acc+ak[it.q].w)/tot]; });
   },
   update(i,t,ws){
     if(!this.on||!Swara.active||!ws){ if(this.i>=0) this.hide(); return; }
-    if(i!==this.i){ if(!this.build(i)) return; requestAnimationFrame(()=>this.el&&this.el.classList.add("on")); }
-    // the word most recently started, and the syllable within it (time shared by short = 1, long = 2)
-    let k=-1; for(let q=0;q<ws.length;q++){ if(ws[q]&&ws[q][0]<=t) k=q; }
-    let upto=0, now=-1;
-    if(k>=0){
-      const base=this.items.findIndex(it=>it.k===k), ak=S.lines[i].words[k].ak||[];
-      if(base>=0){
-        const [a,b]=ws[k];
-        if(t<b){ const tot=ak.reduce((x,y)=>x+y.w,0), f=(t-a)/Math.max(0.05,b-a)*tot; let acc=0, q=0;
-          for(;q<ak.length-1;q++){ acc+=ak[q].w; if(f<acc) break; }
-          upto=base+q; now=base+q; }
-        else upto=base+ak.length;
-      }
+    if(i!==this.i){ if(!this.build(i)) return; this.times(i,ws); requestAnimationFrame(()=>this.el&&this.el.classList.add("on")); }
+    const tm=this.tm; let upto=0, now=-1, soon=-1, frac=0;
+    for(let q=0;q<tm.length;q++){
+      const r=tm[q];
+      if(!r){ if(q===upto) upto++; continue; }        // dandas and numbers: lit with what comes before
+      if(r[0]<=t){ upto=q+1; if(t<r[1]){ now=q; upto=q; frac=(t-r[0])/Math.max(0.05,r[1]-r[0]); } }
+      else { if(soon<0&&this.items[q].a.kind&&r[0]-t<0.45) soon=q; break; }
     }
-    const st=upto+":"+now; if(st===this.state) return; this.state=st;
-    this.items.forEach((it,q)=>{ it.el.classList.toggle("done",q<upto); it.el.classList.toggle("now",q===now); });
+    const st=upto+":"+now+":"+soon;
+    if(this.items.length) this.sung(now>=0?now:upto, now>=0?frac:0);
+    if(st===this.state) return; this.state=st;
+    this.items.forEach((it,q)=>{ it.el.classList.toggle("done",q<upto); it.el.classList.toggle("now",q===now); it.el.classList.toggle("soon",q===soon); });
     const it=this.items[now], kind=it&&it.a.kind;
     this.setLabel(kind||"");
     const d=this.el.querySelector(".pd"), p=this.pts&&this.pts[now>=0?now:upto-1];
@@ -913,9 +961,10 @@ const Practice = {
     const st=this.time(a.i,a.k,false), en=this.time(b.i,b.k,true);
     if(st==null||en==null||en<=st){ this.say("That part is not in this recording. Tap another word."); this.step=1; this.a=this.b=null; this.paint(); return; }
     this.a=a; this.b=b; this.start=Math.max(0,st-0.12); this.end=en+0.25; this.step=3; this.done=0;
-    this.paint(); this.summary();
+    this.paint(); this.summary(this.reps?this.dots():"");
     this.jump(); Music.tryPlay();
   },
+  dots(){ if(!this.reps) return "Time "+(this.done+1)+"."; let d=""; for(let q=0;q<this.reps;q++) d+=q<this.done?"●":q===this.done?"◉":"○"; return d+" "+(this.done+1)+" of "+this.reps+"."; },
   summary(extra){
     const n=this.count(), secs=Math.round(this.end-this.start);
     const what=n===1?"1 word":n+" words";
@@ -959,11 +1008,11 @@ const Practice = {
       Music.el.pause(); this.jump();
       let left=this.gap; const tick=()=>{
         if(!this.ready()) return;
-        if(left<=0){ this.waitT=null; this.summary("Time "+(this.done+1)+"."); Music.tryPlay(); return; }
+        if(left<=0){ this.waitT=null; this.summary(this.dots()); Music.tryPlay(); return; }
         this.say("Your turn: chant it now… "+left); left--; this.waitT=setTimeout(tick,1000);
       }; tick(); return;
     }
-    this.jump(); this.summary("Time "+(this.done+1)+".");
+    this.jump(); this.summary(this.dots());
   }
 };
 $("pracBtn").onclick=()=>Practice.open();
@@ -1567,6 +1616,8 @@ function applySettings(){
   $("sPauseV").textContent=S.pause.toFixed(2)+"s"; $("sLag").value=S.lag; $("sLagV").textContent=S.lag.toFixed(2)+"s"; $("sSensV").textContent=S.sens.toFixed(1)+"×";
   $("sBreaks").textContent=S.breaks?"On":"Off"; $("sBreaks").setAttribute("aria-pressed",S.breaks); $("sBreaks").classList.toggle("on",S.breaks);
   document.body.classList.toggle("no-lens",!Lens.on); document.body.classList.toggle("focus-on",Focus.on);
+  document.body.classList.toggle("near-on",Aids.near); document.body.classList.toggle("no-chip",!Aids.chip);
+  $("nearBtn").setAttribute("aria-checked",Aids.near); $("chipBtn").setAttribute("aria-checked",Aids.chip);
   $("lensBtn").setAttribute("aria-checked",Lens.on); $("focusBtn").setAttribute("aria-checked",Focus.on);
   [["sSwara",Swara.on],["sPauses",Pauses.on]].forEach(([id,v])=>{ $(id).textContent=v?"On":"Off"; $(id).setAttribute("aria-pressed",v); $(id).classList.toggle("on",v); });
 }
@@ -1576,6 +1627,8 @@ $("setSheet").addEventListener("click",e=>{ if(e.target.id==="setSheet") e.targe
 $("sScale").oninput=e=>{ S.scale=+e.target.value; LS.set("scale2",S.scale); applySettings(); Swara.refresh(); };
 $("sSwara").onclick=()=>{ Swara.on=!Swara.on; LS.set("swara",Swara.on); applySettings(); Swara.drawAll(); };
 $("lensBtn").onclick=()=>{ Lens.on=!Lens.on; LS.set("lens",Lens.on); if(!Lens.on) Lens.hide(); applySettings(); if(Music.el&&Music.el.paused) Music.loop(); };
+$("nearBtn").onclick=()=>{ Aids.near=!Aids.near; LS.set("near",Aids.near); applySettings(); };
+$("chipBtn").onclick=()=>{ Aids.chip=!Aids.chip; LS.set("chip",Aids.chip); applySettings(); };
 $("focusBtn").onclick=()=>{ Focus.on=!Focus.on; LS.set("focus",Focus.on); applySettings(); Swara.refresh(); };
 $("sPauses").onclick=()=>{ Pauses.on=!Pauses.on; LS.set("pauses",Pauses.on); applySettings(); document.body.classList.toggle("no-pause",!Pauses.on); Swara.refresh(); };
 $("sPause").oninput=e=>{ S.pause=+e.target.value; LS.set("pause3",S.pause); applySettings(); };

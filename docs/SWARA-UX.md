@@ -24,6 +24,21 @@ Amma and Appa chant Sri Rudram in the morning, with the recording on an iPad tha
 - **Within a word, syllable timing is an estimate.** The word's time is shared out by the classical rule: a long syllable (guru) gets two parts, a short one (laghu) gets one. It is close, not exact.
 - **Which syllable carries which swara comes from the published text** (sanskritdocuments.org, proofread). The app does not detect pitch from the voice.
 
+## Melody text
+
+In the lens, **the text itself follows the pitch**: svarita syllables sit higher, anudātta syllables lower, unmarked syllables in the middle. A thin melody line runs under them, rising and falling with the syllables. It turns gold as the line is sung, and is grey for what is still to come. The syllable being sung lights up in its swara colour and grows; the next swara syllable glows softly about half a second before it arrives, so the voice can get ready.
+
+## Attention aids (helpful for ADHD, and for tired eyes)
+
+| Aid | Why it helps | Where |
+|---|---|---|
+| **One place to look** | The lens stays still for the whole line; only the light moves. | Zoom lens (More) |
+| **Nearby lines only** | Everything except the two lines before and after the current one fades almost away, so nothing else competes for attention. | More → Nearby lines only |
+| **Cue before it comes** | The next swara syllable glows just before it is sung. Knowing what is next makes it easier to stay. | Automatic in the lens |
+| **Progress you can see** | A small chip shows the anuvāka, "line 5 of 32", and a bar. A quiet "✦ anuvāka complete" marks each finished section. | More → Show progress |
+| **Small loops** | Practise a few words at a time, with dots for each repeat (◉○○) and a "your turn" pause. | More → Practise a portion |
+| **Less motion when needed** | Every aid can be switched off; reduced-motion devices get no animation. | More, Settings |
+
 ## Why the lens shows a line, not a word
 
 The first lens followed single words. In Namakam that is 1,134 words in 16 minutes, so the card was rebuilt and moved about 70 times a minute, and the eye was pulled across the screen each time. The line lens is rebuilt only when the line changes (about once every 5 seconds) and stays in one place; only the light moves inside it.
